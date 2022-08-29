@@ -10,6 +10,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeab
 
 import "./interfaces/ITaggr.sol";
 import "./interfaces/ITaggrSettings.sol";
+import "./interfaces/ITaggrNft.sol";
 import "./interfaces/ITaggrNftFactory.sol";
 import "./lib/BlackholePrevention.sol";
 
@@ -131,6 +132,7 @@ contract Taggr is
     string memory projectId,
     string memory projectName,
     string memory projectSymbol,
+    string memory baseTokenUri,
     uint256 nftFactoryId,
     uint256 maxSupply,
     uint96 royaltiesPct
@@ -155,6 +157,7 @@ contract Taggr is
       projectIdHash,
       projectName,
       projectSymbol,
+      baseTokenUri,
       nftFactoryId,
       maxSupply,
       royaltiesPct
@@ -200,9 +203,9 @@ contract Taggr is
     emit NftFactoryRegistered(nftFactory, factoryId);
   }
 
-  function managerUpdateCustomerAccount(address customerAccount, uint256 planType) external onlyRole(MANAGER_ROLE) {
+  function managerUpdateCustomerAccount(address customer, uint256 planType) external onlyRole(MANAGER_ROLE) {
     // Create Member
-    _updateCustomerAccount(customerAccount, planType);
+    _updateCustomerAccount(customer, planType);
   }
 
   function toggleCustomerSelfServe(address customer, bool state) external onlyRole(MANAGER_ROLE) {
@@ -215,6 +218,7 @@ contract Taggr is
     string memory projectId,
     string memory projectName,
     string memory projectSymbol,
+    string memory baseTokenUri,
     uint256 nftFactoryId,
     uint256 maxSupply,
     uint96 royaltiesPct
@@ -233,6 +237,7 @@ contract Taggr is
       projectIdHash,
       projectName,
       projectSymbol,
+      baseTokenUri,
       nftFactoryId,
       maxSupply,
       royaltiesPct
@@ -317,12 +322,21 @@ contract Taggr is
     bytes32 projectIdHash,
     string memory projectName,
     string memory projectSymbol,
+    string memory baseTokenUri,
     uint256 nftFactoryId,
     uint256 maxSupply,
     uint96 royaltiesPct
   ) internal returns (address contractAddress) {
     // Deploy Contract Clone from Factory
-    contractAddress = _nftFactories[nftFactoryId].deploy(customerAccount, _nftDistributor, projectName, projectSymbol, maxSupply, royaltiesPct);
+    contractAddress = _nftFactories[nftFactoryId].deploy(
+      customerAccount,
+      _nftDistributor,
+      projectName,
+      projectSymbol,
+      baseTokenUri,
+      maxSupply,
+      royaltiesPct
+    );
     _launchNewProjectWithContract(customerAccount, projectIdHash, contractAddress);
   }
 

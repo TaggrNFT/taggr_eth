@@ -45,7 +45,6 @@ contract NftDistributor is
 
   //  NFT Contract =>          TokenID => Claimed-State
   mapping (address => mapping (uint256 => bool)) internal _isTokenFullyClaimed;
-  mapping (address => mapping (uint256 => uint256)) internal _tokenPhysicalDeliveryTimestamp;
 
 
   /***********************************|
@@ -68,10 +67,6 @@ contract NftDistributor is
   /***********************************|
   |         Public Functions          |
   |__________________________________*/
-
-  function getTokenPhysicalDeliveryTimestamp(address contractAddress, uint256 tokenId) external view override returns (uint256) {
-    return _tokenPhysicalDeliveryTimestamp[contractAddress][tokenId];
-  }
 
   function isFullyClaimed(address contractAddress, uint256 tokenId) public view override returns (bool isClaimed) {
     isClaimed = _isTokenFullyClaimed[contractAddress][tokenId];
@@ -150,11 +145,11 @@ contract NftDistributor is
     _setMerkleRoot(contractAddress, merkleRoot);
   }
 
-  function setPhysicalDeliveryTimestamp(string memory projectId, uint256 tokenId) public virtual {
+  function signalPhysicalDelivery(string memory projectId, uint256 tokenId) public virtual {
     require(_taggr.isProjectManager(projectId, _msgSender()), "Not project manager");
 
     address contractAddress = _taggr.getProjectContract(projectId);
-    _tokenPhysicalDeliveryTimestamp[contractAddress][tokenId] = block.timestamp;
+    emit PhysicalDeliveryTimestamp(projectId, contractAddress, tokenId, block.timestamp);
   }
 
 

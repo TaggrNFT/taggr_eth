@@ -44,7 +44,7 @@ describe("NftDistributor", function () {
     await ethSender.deployTransaction.wait();
 
     await taggr.connect(signerD).managerUpdateCustomerAccount(user1, 1);
-    const tx = await taggr.connect(signerD).managerLaunchNewProject(user1, TEST_PROJECT_ID, 'Name', 'Symbol', 1, 1000, 100);
+    const tx = await taggr.connect(signerD).managerLaunchNewProject(user1, TEST_PROJECT_ID, 'Name', 'Symbol', '', 1, 1000, 100);
     const txData = await tx.wait();
     const projectContractAddress = _.get(_.find(txData.events, {event: 'CustomerProjectLaunched'}), 'args.contractAddress', '');
 
@@ -124,7 +124,7 @@ describe("NftDistributor", function () {
     it('should not be able to claim a purchased NFT');
     it('should allow project managers to update the Merkle Root');
     it('should allow the contract owner to update the Merkle Root for a specific project');
-    it('should allow project managers to update the Physical Delivery Timestamp');
+    it('should allow project managers to signal the Physical Delivery Timestamp event');
   });
 
   describe('NFT Purchases', async () => {

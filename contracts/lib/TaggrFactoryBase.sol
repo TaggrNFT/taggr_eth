@@ -36,6 +36,7 @@ contract TaggrFactoryBase is AccessControlEnumerableUpgradeable {
     address distributor,
     string memory name,
     string memory symbol,
+    string memory baseTokenUri,
     uint256 maxSupply,
     uint96 royaltiesPct
   )
@@ -44,7 +45,7 @@ contract TaggrFactoryBase is AccessControlEnumerableUpgradeable {
     returns (address)
   {
     address newContract = _nftTemplate.clone();
-    ITaggrNft(newContract).initialize(owner, distributor, name, symbol, maxSupply, royaltiesPct);
+    ITaggrNft(newContract).initialize(owner, distributor, name, symbol, baseTokenUri, maxSupply, royaltiesPct);
     return newContract;
   }
 }

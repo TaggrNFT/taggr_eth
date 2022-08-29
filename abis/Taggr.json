@@ -768,6 +768,11 @@
         "type": "string"
       },
       {
+        "internalType": "string",
+        "name": "baseTokenUri",
+        "type": "string"
+      },
+      {
         "internalType": "uint256",
         "name": "nftFactoryId",
         "type": "uint256"
@@ -814,6 +819,11 @@
       {
         "internalType": "string",
         "name": "projectSymbol",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "baseTokenUri",
         "type": "string"
       },
       {
@@ -870,7 +880,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "customerAccount",
+        "name": "customer",
         "type": "address"
       },
       {

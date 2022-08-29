@@ -362,6 +362,11 @@
         "type": "string"
       },
       {
+        "internalType": "string",
+        "name": "baseTokenUri",
+        "type": "string"
+      },
+      {
         "internalType": "uint256",
         "name": "contractType",
         "type": "uint256"

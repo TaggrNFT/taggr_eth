@@ -9,8 +9,8 @@ interface INftDistributor {
   event TokenEscrowSet(address indexed tokenEscrow);
   event NftClaimed(address indexed to, address indexed contractAddress, uint256 tokenId);
   event NftPurchased(address indexed to, address indexed contractAddress, uint256 tokenId);
+  event PhysicalDeliveryTimestamp(string indexed projectId, address indexed contractAddress, uint256 tokenId, uint256 timestamp);
 
-  function getTokenPhysicalDeliveryTimestamp(address contractAddress, uint256 tokenId) external view returns (uint256);
   function isFullyClaimed(address contractAddress, uint256 tokenId) external view returns (bool isClaimed);
 
   function hasValidClaim(

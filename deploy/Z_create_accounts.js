@@ -22,6 +22,13 @@ const { verifyContract } = require('../js-helpers/verification');
 
 const _ = require('lodash');
 
+const MEMBERSHIP_PLAN_TYPE = {
+  'free'          : 1,
+  'standard'      : 2,
+  'professional'  : 3,
+  'business'      : 4,
+};
+
 const CONTRACT_TYPE = {
   'Lazy721': 1,
 };
@@ -34,19 +41,28 @@ const CONTRACT_ABI = {
 const _createCustomer = async (txId, taggr, project) => {
   let tx;
   log(`[TX-${txId}-a] Taggr: Creating Customer: ${project.customer}`);
-  tx = await taggr.managerCreateCustomerAccount(project.customerId);
+  tx = await taggr.managerUpdateCustomerAccount(project.customerAddress, project.planType);
   await tx.wait();
 
   if (project.selfServe) {
     log(`[TX-${txId}-b] Taggr: Enabling Self-Serve for: ${project.customer}`);
-    tx = await taggr.toggleCustomerSelfServe(project.customerId, true);
+    tx = await taggr.toggleCustomerSelfServe(project.customerAddress, true);
     await tx.wait();
   }
 };
 
 const _deployProject = async (txId, taggr, project, networkName) => {
   log(`[TX-${txId}-a] Taggr: Launching Project for ${project.name}: ${project.projectId}`);
-  const txData = await taggr.managerLaunchNewProject(project.customerId, project.projectId, project.name, project.symbol, project.type, project.max, project.royalties);
+  const txData = await taggr.managerLaunchNewProject(
+    project.customerAddress,
+    project.projectId,
+    project.name,
+    project.symbol,
+    project.baseTokenUri,
+    project.nftFactoryId,
+    project.max,
+    project.royalties
+  );
   const deployData = await txData.wait();
 
   const projectContract = await taggr.getProjectContract(project.projectId);
@@ -69,7 +85,7 @@ module.exports = async () => {
   let project;
 
   const ddTaggr = getDeployData('Taggr', chainId);
-  if (isHardhat) { return; }
+  // if (isHardhat) { return; }
 
   const networkName = network.name === 'homestead' ? 'mainnet' : network.name;
 
@@ -93,15 +109,17 @@ module.exports = async () => {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   project = {
-    customer   : 'Taggr',
-    customerId : protocolOwner,
-    projectId  : 'TAGGR-TAG-SWAG',
-    name       : 'TaggdSwag',
-    symbol     : 'SWAG',
-    type       : CONTRACT_TYPE.Lazy721,
-    max        : 100000,
-    royalties  : 100,  // 1%
-    selfServe  : true,
+    customer        : 'Taggr',
+    customerAddress : protocolOwner,
+    planType        : MEMBERSHIP_PLAN_TYPE.free,
+    projectId       : 'TAGGR-TAG-SWAG',
+    name            : 'TaggdSwag',
+    symbol          : 'SWAG',
+    baseTokenUri    : '',
+    nftFactoryId    : CONTRACT_TYPE.Lazy721,
+    max             : 100000,
+    royalties       : 100,  // 1%
+    selfServe       : true,
   };
   _createCustomer('1', taggr, project);
   _deployProject('2', taggr, project, networkName);

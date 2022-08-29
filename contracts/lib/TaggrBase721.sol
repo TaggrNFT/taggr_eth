@@ -38,6 +38,7 @@ contract TaggrBase721 is
     address _distributor,
     string memory _name,
     string memory _symbol,
+    string memory baseTokenUri,
     uint256 maxSupply,
     uint96 royaltiesPct
   )
@@ -52,6 +53,7 @@ contract TaggrBase721 is
     _maxSupply = maxSupply;
     _transferOwnership(_owner);
     _setDefaultRoyalty(_owner, royaltiesPct);
+    _baseTokenURI = baseTokenUri;
     _initialized = true;
   }
 

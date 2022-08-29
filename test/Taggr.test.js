@@ -118,11 +118,11 @@ describe("Taggr", function () {
       await taggr.connect(signerD).managerUpdateCustomerAccount(user1, 1);
 
       // Attempt Creation by Non-Manager
-      await expect(taggr.connect(signer1).managerLaunchNewProject(user1, TEST_PROJECT_ID, 'Name', 'Symbol', 1, 1000, 100))
+      await expect(taggr.connect(signer1).managerLaunchNewProject(user1, TEST_PROJECT_ID, 'Name', 'Symbol', '', 1, 1000, 100))
         .to.be.revertedWith(`AccessControl: account ${_.toLower(signer1.address)} is missing role ${ROLES.MANAGER_ROLE}`);
 
       // Creation
-      await expect(taggr.connect(signerD).managerLaunchNewProject(user1, TEST_PROJECT_ID, 'Name', 'Symbol', 1, 1000, 100))
+      await expect(taggr.connect(signerD).managerLaunchNewProject(user1, TEST_PROJECT_ID, 'Name', 'Symbol', '', 1, 1000, 100))
         .to.emit(taggr, 'CustomerProjectLaunched');
 
         // Commneted out; Contract address keeps chaning based on the number of transactions by the user

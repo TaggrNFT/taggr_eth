@@ -7,6 +7,7 @@ interface ITaggrNftFactory {
     address distributor,
     string memory name,
     string memory symbol,
+    string memory baseTokenUri,
     uint256 maxSupply,
     uint96 royaltiesPct
   ) external returns (address);

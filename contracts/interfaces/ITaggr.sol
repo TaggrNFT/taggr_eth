@@ -26,6 +26,7 @@ interface ITaggr {
     string memory projectId,
     string memory projectName,
     string memory projectSymbol,
+    string memory baseTokenUri,
     uint256 contractType,
     uint256 maxSupply,
     uint96 royaltiesPct
