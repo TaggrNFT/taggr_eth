@@ -1,0 +1,32 @@
+{
+  "manifestVersion": "3.2",
+  "contracts": {
+    "Taggr": "Taggr",
+    "TaggrSettings": "TaggrSettings",
+    "CustomerSettings": "CustomerSettings",
+    "NftDistributor": "NftDistributor",
+    "TaggrFactoryLazy721": "TaggrFactoryLazy721",
+    "TokenEscrow": "TokenEscrow"
+  },
+  "dependencies": {
+  },
+  "name": "taggr",
+  "version": "1.0.0",
+  "telemetryOptIn": false,
+  "compiler": {
+    "manager": "openzeppelin",
+    "solcVersion": "0.8.4",
+    "compilerSettings": {
+      "optimizer": {
+        "enabled": false,
+        "runs": "200"
+      },
+      "evmVersion": "istanbul"
+    },
+    "artifactsDir": "build",
+    "contractsDir": "contracts",
+    "typechain": {
+      "enabled": false
+    }
+  }
+}

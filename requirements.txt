@@ -1,0 +1,112 @@
+
+
+Factories to Deploy:
+  ERC721
+  ERC1155
+
+
+Requires payment based on required settings
+Payment is based in ERC20 Stable coin
+
+
+Networks:
+  Ethereum Mainnet + Goerli
+  Polygon Mainnet + Mumbai
+
+
+Contract Settings:
+  Contract Name, Description
+  Taggr Tag ID (for reference)
+  Set Max Items
+
+  Mint-First, Merch-Later
+    - Off-chain: sign message to save shipping address for Merch
+    - On-chain: mark NFT as fully claimed
+
+  Merch-First, Mint-Later
+    - requires scratch & reveal claim codes
+    - claim codes are attached to merkle proof
+    - allow setting merkle proof later
+    - On-chain: mark NFT as fully claimed
+
+  Minting Type:
+    Lazy Minting
+      - Minting is perfomred when claiming the NFT (user pays gas fees)
+      - If Charged:
+        - Tokens come from Treasury Contract and pre-funded by customer
+        - Rules:
+          - no. of tokens per NFT
+
+    Meta-Txs for Minting
+      - Minting is performed when claiming the NFT (customer pays gas fees)
+
+    Batch Minting
+      - Minting is performed up-front and the claim is just a transfer (user pays gas fees for transfer)
+      - use EIP-2309 for Consecutive Transfers when minting;
+        - https://eips.ethereum.org/EIPS/eip-2309
+
+  Purchase Fees
+    - Fees are collected when minting; ERC20 tokens escrowed for customer
+
+  Royalties
+    - NFT contract comes with Royalties mechanism for customer
+
+  Charged Particles
+    - Minted NFTs can be Charged-Up with tokens provided by customer
+
+  Metadata + Image Storage Considerations:
+    - IPFS? Hosted? Custom?
+    - NFT.Storage?
+    - Filecoin/Arweave?
+    - Self-hosted?  Customer-hosted?
+    - On-chain (JSON/SVG)?
+
+  Sale-Automation for NFTs:
+  - Allowlist for Early and/or Free Minting
+  - Pre-sale amount/date
+  - Public-sale amount/date
+  - Max-Mint per Account + Timeframe
+  - Pre-sale end-date
+  - Public-sale end-date
+
+  Profit-Splitting (low-prio, connect to a multisig instead):
+  - Manage accounts for Profit-Splitting
+
+
+Promote listings to OpenSea? other marketplaces?
+
+
+
+
+ERC721-Factory
+  - Deploys ERC721 per Customer/Project
+
+ERC1155-Factory
+  - Deploys ERC1155 per Customer/Project
+
+Separate factory + NFT contracts for each minting type (Lazy, Meta, Batch)
+
+
+
+Settings baked into individual deployed NFT contracts:
+  Contract Name, Description
+  Taggr Tag ID (for reference)
+  Max Items
+  Fully-claimed State
+  Merkle-proof for claim-codes
+
+
+
+GlobalSettings.sol
+  - Mapping for each Customer/Project holding state for:
+    - Purchase Fee + Token Type
+    - Royalties + Receiver
+
+SaleAutomation.sol
+  - Mapping for each Customer/Project holding state for:
+    - Allowlist for Early and/or Free Minting
+    - Pre-sale amount/date
+    - Public-sale amount/date
+    - Max-Mint per Account + Timeframe
+    - Pre-sale end-date
+    - Public-sale end-date
