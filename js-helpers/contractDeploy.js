@@ -202,6 +202,33 @@ const contractDeploy = async (args = {fromUnitTests: false}) => {
   }
 
 
+  //
+  // Deploy Fake USDC with Premint for Testing/QA
+  //
+
+  let fakeUSDC;
+  if (!isProd) {
+    const FakeUSDC = await ethers.getContractFactory('FakeUSDC');
+    if (!args.fromUnitTests) {
+      log('  Deploying FakeUSDC...');
+      const FakeUSDCInstance = await FakeUSDC.deploy();
+      fakeUSDC = await FakeUSDCInstance.deployed();
+    } else {
+      fakeUSDC = await FakeUSDC.deploy();
+    }
+    deployData['FakeUSDC'] = {
+      abi: getContractAbi('FakeUSDC'),
+      address: fakeUSDC.address,
+      deployTransaction: fakeUSDC.deployTransaction,
+    }
+    saveDeploymentData(chainId, deployData);
+    if (!args.fromUnitTests) {
+      log('  - FakeUSDC: ', fakeUSDC.address);
+      log('     - Block:            ', fakeUSDC.deployTransaction.blockNumber);
+      log('     - Gas Cost:         ', getTxGasCost({ deployTransaction: fakeUSDC.deployTransaction }));
+    }
+  }
+
 
 
   if (!args.fromUnitTests) {
@@ -209,7 +236,7 @@ const contractDeploy = async (args = {fromUnitTests: false}) => {
     log('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
   }
 
-  return {
+  const exportObj = {
     taggr,
     taggrSettings,
     customerSettings,
@@ -217,6 +244,12 @@ const contractDeploy = async (args = {fromUnitTests: false}) => {
     tokenEscrow,
     taggrFactoryLazy721,
   };
+
+  if (!isProd) {
+    exportObj['fakeUSDC'] = fakeUSDC;
+  }
+
+  return exportObj;
 };
 
 module.exports = {

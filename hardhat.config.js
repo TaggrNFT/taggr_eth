@@ -57,6 +57,11 @@ module.exports = {
       blockGasLimit: 200000000,
       allowUnlimitedContractSize: true,
       gasPrice: 1e9,
+      accounts: {
+        mnemonic: mnemonic.testnet,
+        initialIndex: 0,
+        count: 10,
+      },
     },
     goerli: {
       url: `https://goerli.infura.io/v3/${process.env.INFURA_APIKEY}`,
@@ -112,7 +117,7 @@ module.exports = {
     runOnCompile: true,
     clear: true,
     flat: true,
-    only: ["Taggr", "CustomerSettings", "TaggrSettings", "NftDistributor", "Merkle", "TokenEscrow"],
+    only: ["Taggr", "CustomerSettings", "TaggrSettings", "NftDistributor", "Merkle", "TokenEscrow", "FakeUSDC"],
   },
   namedAccounts: {
     deployer: { default: 0 },

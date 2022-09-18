@@ -3,9 +3,8 @@ pragma solidity 0.8.4;
 
 interface ICustomerSettings {
   event ContractReady(address indexed intializer);
-  event ProjectPurchaseFeeSet(string projectId, uint256 fee);
-  event ProjectPurchaseFeeTokenSet(string projectId, address feeToken);
-  event ProjectFreeMinterSet(string projectId, address freeMinter, uint256 freeMintAmount);
+  event ProjectPurchaseFeeSet(string indexed projectId, address feeToken, uint256 fee);
+  event ProjectFreeMinterSet(string indexed projectId, address freeMinter, uint256 freeMintAmount);
 
   function getProjectPurchaseFee(string memory projectId) external view returns (uint256);
   function getProjectPurchaseFeeToken(string memory projectId) external view returns (address);

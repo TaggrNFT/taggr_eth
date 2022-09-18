@@ -6,7 +6,8 @@
     "CustomerSettings": "CustomerSettings",
     "NftDistributor": "NftDistributor",
     "TaggrFactoryLazy721": "TaggrFactoryLazy721",
-    "TokenEscrow": "TokenEscrow"
+    "TokenEscrow": "TokenEscrow",
+    "FakeUSDC": "FakeUSDC"
   },
   "dependencies": {
   },

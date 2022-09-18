@@ -40,7 +40,7 @@ const CONTRACT_ABI = {
 
 const _createCustomer = async (txId, taggr, project) => {
   let tx;
-  log(`[TX-${txId}-a] Taggr: Creating Customer: ${project.customer}`);
+  log(`[TX-${txId}-a] Taggr: Creating Customer: ${project.customer} (Address: ${project.customerAddress})`);
   tx = await taggr.managerUpdateCustomerAccount(project.customerAddress, project.planType);
   await tx.wait();
 
@@ -51,7 +51,7 @@ const _createCustomer = async (txId, taggr, project) => {
   }
 };
 
-const _deployProject = async (txId, taggr, project, networkName) => {
+const _deployProject = async (txId, taggr, customerSettings, project, chainId, networkName) => {
   log(`[TX-${txId}-a] Taggr: Launching Project for ${project.name}: ${project.projectId}`);
   const txData = await taggr.managerLaunchNewProject(
     project.customerAddress,
@@ -61,15 +61,19 @@ const _deployProject = async (txId, taggr, project, networkName) => {
     project.baseTokenUri,
     project.nftFactoryId,
     project.max,
-    project.royalties
+    project.royalties,
   );
-  const deployData = await txData.wait();
+  const txDeployData = await txData.wait();
+
+  const tx = await customerSettings.setProjectPurchaseFee(project.projectId, project.purchaseToken, project.purchaseFee);
+  await tx.wait();
 
   const projectContract = await taggr.getProjectContract(project.projectId);
+  const deployData = {};
   deployData[project.projectId] = {
     abi: CONTRACT_ABI[project.type],
     address: projectContract,
-    deployTransaction: deployData,
+    deployTransaction: txDeployData,
   }
   saveDeploymentData(chainId, deployData);
   log(`   - New Project Contract: ${projectContract}`);
@@ -84,10 +88,21 @@ module.exports = async () => {
   const {isProd, isHardhat} = chainTypeById(chainId);
   let project;
 
+  const toUSDC = v => ethers.utils.parseUnits(v, 6);
+
   const ddTaggr = getDeployData('Taggr', chainId);
+  const ddCustomerSettings = getDeployData('CustomerSettings', chainId);
+  let ddFakeUSDC;
+  if (!isProd) {
+    ddFakeUSDC = getDeployData('FakeUSDC', chainId);
+  }
   // if (isHardhat) { return; }
 
   const networkName = network.name === 'homestead' ? 'mainnet' : network.name;
+
+  const taggrBaseUri = isProd
+    ? 'https://us-central1-taggr-nft.cloudfunctions.net/api/meta'
+    : 'https://us-central1-taggr-nft-staging.cloudfunctions.net/api/meta';
 
   log('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
   log('Taggr - Account Creation');
@@ -103,6 +118,17 @@ module.exports = async () => {
   const Taggr = await ethers.getContractFactory('Taggr');
   const taggr = await Taggr.attach(ddTaggr.address);
 
+  log('  Loading CustomerSettings from: ', ddCustomerSettings.address);
+  const CustomerSettings = await ethers.getContractFactory('CustomerSettings');
+  const customerSettings = await CustomerSettings.attach(ddCustomerSettings.address);
+
+  let fakeUSDC;
+  if (!isProd) {
+    log('  Loading FakeUSDC from: ', ddFakeUSDC.address);
+    const FakeUSDC = await ethers.getContractFactory('FakeUSDC');
+    fakeUSDC = await FakeUSDC.attach(ddFakeUSDC.address);
+  }
+
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Customer: Taggr
@@ -111,18 +137,38 @@ module.exports = async () => {
   project = {
     customer        : 'Taggr',
     customerAddress : protocolOwner,
-    planType        : MEMBERSHIP_PLAN_TYPE.free,
-    projectId       : 'TAGGR-TAG-SWAG',
-    name            : 'TaggdSwag',
-    symbol          : 'SWAG',
-    baseTokenUri    : '',
+    planType        : MEMBERSHIP_PLAN_TYPE.business,
+    projectId       : 'FUTURIST-CONF',
+    name            : 'Taggr - Futurist Conference Swag',
+    symbol          : 'TAGGR-FC',
+    baseTokenUri    : `${taggrBaseUri}/FUTURIST-CONF/`,
+    // baseTokenUri    : 'https://us-central1-taggr-nft-staging.cloudfunctions.net/api/meta/TAGGR-TAG-SWAG/',
     nftFactoryId    : CONTRACT_TYPE.Lazy721,
     max             : 100000,
-    royalties       : 100,  // 1%
+    royalties       : 200,  // 2%
     selfServe       : true,
+    purchaseToken   : isProd ? '__USDC__' : fakeUSDC.address,
+    purchaseFee     : toUSDC('350'),
   };
-  _createCustomer('1', taggr, project);
-  _deployProject('2', taggr, project, networkName);
+  await _createCustomer('1', taggr, project);
+  await _deployProject('2', taggr, customerSettings, project, chainId, networkName);
+
+  project = {
+    customer        : 'Taggr',
+    customerAddress : protocolOwner,
+    planType        : MEMBERSHIP_PLAN_TYPE.business,
+    projectId       : 'DIRTY-NERD',
+    name            : 'Taggr - Dirty Nerd Exclusive',
+    symbol          : 'TAGGR-DN',
+    baseTokenUri    : `${taggrBaseUri}/DIRTY-NERD/`,
+    nftFactoryId    : CONTRACT_TYPE.Lazy721,
+    max             : 100000,
+    royalties       : 200,  // 2%
+    selfServe       : true,
+    purchaseToken   : isProd ? '__USDC__' : fakeUSDC.address,
+    purchaseFee     : toUSDC('350'),
+  };
+  await _deployProject('3', taggr, customerSettings, project, chainId, networkName);
 
 
   log(`\n  Account Creation Complete!`);

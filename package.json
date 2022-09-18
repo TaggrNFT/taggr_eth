@@ -24,10 +24,13 @@
     "coverage": "yarn clean-test && yarn compile && hardhat --show-stack-traces coverage --temp coverage_build && yarn clean-test",
     "gas": "REPORT_GAS=true hardhat test",
     "start": "hardhat node --port 8545",
-    "deploy": "yarn clean-test && hardhat deploy --tags core,setup,accounts --network",
+    "deploy-core": "yarn clean-test && hardhat deploy --tags core --network",
+    "deploy-setup": "yarn clean-test && hardhat deploy --tags setup --network",
     "setup": "hardhat deploy --tags setup --network",
     "etherscan-verify": "hardhat deploy --tags verify --network",
     "create-accounts": "hardhat deploy --tags accounts --network",
+    "mint-usdc": "hardhat deploy --tags mintusdc --network",
+    "mint-pass": "hardhat deploy --tags freemintpass --network",
     "gen-docs": "solidity-docgen -i contracts -o docs"
   },
   "devDependencies": {

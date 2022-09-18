@@ -7,6 +7,7 @@ import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-IERC20PermitUpgradeable.sol";
 
 import "./interfaces/ITaggr.sol";
 import "./interfaces/ITokenEscrow.sol";
@@ -110,6 +111,34 @@ contract NftDistributor is
     emit NftClaimed(to, contractAddress, tokenId);
   }
 
+  function mintNftWithPass(
+    string calldata projectId,
+    address contractAddress,
+    uint256 tokenId
+  )
+    external
+    payable
+    virtual
+    override
+    nonReentrant
+  {
+    bool isClaimed = _isTokenFullyClaimed[contractAddress][tokenId];
+    require(!isClaimed, "TL721:E-");
+
+    address purchaser = _msgSender();
+    uint256 freeMintAmount = _customerSettings.getProjectFreeMintAmount(projectId, purchaser);
+    require(freeMintAmount > 0, "TL721:E-");
+
+    // Mark NFT as Fully-Claimed
+    _isTokenFullyClaimed[contractAddress][tokenId] = true;
+    _customerSettings.decrementProjectFreeMint(projectId, purchaser, 1);
+
+    // Mint Token
+    ITaggrNft(contractAddress).distributeToken(purchaser, tokenId);
+
+    emit NftPurchased(purchaser, contractAddress, tokenId, true);
+  }
+
   function purchaseNft(
     string calldata projectId,
     address contractAddress,
@@ -126,7 +155,11 @@ contract NftDistributor is
 
     // Collect Payment for Customer
     address purchaser = _msgSender();
-    _collectPayment(projectId, purchaser);
+    uint256 purchaseFee = _customerSettings.getProjectPurchaseFee(projectId);
+    if (purchaseFee > 0) {
+      address purchaseToken = _customerSettings.getProjectPurchaseFeeToken(projectId);
+      _collectPayment(projectId, purchaser, purchaseToken, purchaseFee);
+    }
 
     // Mark NFT as Fully-Claimed
     _isTokenFullyClaimed[contractAddress][tokenId] = true;
@@ -134,7 +167,43 @@ contract NftDistributor is
     // Mint Token
     ITaggrNft(contractAddress).distributeToken(purchaser, tokenId);
 
-    emit NftPurchased(purchaser, contractAddress, tokenId);
+    emit NftPurchased(purchaser, contractAddress, tokenId, false);
+  }
+
+  function purchaseNftWithPermit(
+    string calldata projectId,
+    address contractAddress,
+    uint256 tokenId,
+    uint256 deadline,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
+  )
+    external
+    payable
+    virtual
+    override
+    nonReentrant
+  {
+    bool isClaimed = _isTokenFullyClaimed[contractAddress][tokenId];
+    require(!isClaimed, "TL721:E-");
+
+    // Collect Payment for Customer
+    address purchaser = _msgSender();
+    uint256 purchaseFee = _customerSettings.getProjectPurchaseFee(projectId);
+    if (purchaseFee > 0) {
+      address purchaseToken = _customerSettings.getProjectPurchaseFeeToken(projectId);
+      IERC20PermitUpgradeable(purchaseToken).permit(purchaser, address(this), purchaseFee, deadline, v, r, s);
+      _collectPayment(projectId, purchaser, purchaseToken, purchaseFee);
+    }
+
+    // Mark NFT as Fully-Claimed
+    _isTokenFullyClaimed[contractAddress][tokenId] = true;
+
+    // Mint Token
+    ITaggrNft(contractAddress).distributeToken(purchaser, tokenId);
+
+    emit NftPurchased(purchaser, contractAddress, tokenId, false);
   }
 
 
@@ -221,45 +290,32 @@ contract NftDistributor is
   |         Private/Internal          |
   |__________________________________*/
 
-  function _collectPayment(string memory projectId, address purchaser) internal {
-    // Check CustomerSettings.sol for Required Purchase Fees:
-    uint256 purchaseFee = _customerSettings.getProjectPurchaseFee(projectId);
+  function _collectPayment(string memory projectId, address purchaser, address purchaseToken, uint256 purchaseFee) internal {
+    // Transfer Purchase Fees to Escrow on behalf of Customer
+    address payable customerAccount = payable(_taggr.getProjectOwner(projectId));
+    uint256 customerFee = purchaseFee;
 
-    // If account is in Allowlist for Free Minting then fee = 0
-    uint256 freeMintAmount = _customerSettings.getProjectFreeMintAmount(projectId, purchaser);
-    if (freeMintAmount > 0) {
-      _customerSettings.decrementProjectFreeMint(projectId, purchaser, 1);
-      purchaseFee = 0;
+    // Calculate Taggr Fees Percentage
+    uint256 customerPlanType = _taggr.getCustomerPlanType(customerAccount);
+    uint256 customerPlanFee = _taggrSettings.getMintingFeeByPlanType(customerPlanType);
+    if (customerPlanFee > 0) {
+      uint256 taggrFee = (purchaseFee * customerPlanFee) / PERCENTAGE_SCALE;
+      customerFee -= taggrFee;
+
+      if (purchaseToken == ETH_ADDRESS) {
+        require(msg.value >= purchaseFee, "Insufficient payment");
+        _escrow.deposit{value: customerFee}(customerAccount);
+        _escrow.deposit{value: taggrFee}(_taggrPaymentReceiver);
+      } else {
+        IERC20Upgradeable(purchaseToken).safeTransferFrom(purchaser, address(_escrow), purchaseFee);
+        _escrow.depositTokens(customerAccount, purchaseToken, customerFee);
+        _escrow.depositTokens(_taggrPaymentReceiver, purchaseToken, taggrFee);
+      }
     }
 
-    // Transfer Purchase Fees to Escrow on behalf of Customer
-    if (purchaseFee > 0) {
-      address payable customerAccount = payable(_taggr.getProjectOwner(projectId));
-      address purchaseToken = _customerSettings.getProjectPurchaseFeeToken(projectId);
-      uint256 customerFee = purchaseFee;
-
-      // Calculate Taggr Fees Percentage
-      uint256 customerPlanType = _taggr.getCustomerPlanType(customerAccount);
-      uint256 customerPlanFee = _taggrSettings.getMintingFeeByPlanType(customerPlanType);
-      if (customerPlanFee > 0) {
-        uint256 taggrFee = (purchaseFee * customerPlanFee) / PERCENTAGE_SCALE;
-        customerFee -= taggrFee;
-
-        if (purchaseToken == ETH_ADDRESS) {
-          require(msg.value >= purchaseFee, "Insufficient payment");
-          _escrow.deposit{value: customerFee}(customerAccount);
-          _escrow.deposit{value: taggrFee}(_taggrPaymentReceiver);
-        } else {
-          IERC20Upgradeable(purchaseToken).safeTransferFrom(purchaser, address(_escrow), purchaseFee);
-          _escrow.depositTokens(customerAccount, purchaseToken, customerFee);
-          _escrow.depositTokens(_taggrPaymentReceiver, purchaseToken, taggrFee);
-        }
-      }
-
-      // Refund overspend
-      if (purchaseFee > 0 && purchaseToken == ETH_ADDRESS && msg.value > purchaseFee) {
-        payable(purchaser).sendValue(msg.value - purchaseFee);
-      }
+    // Refund overspend
+    if (purchaseFee > 0 && purchaseToken == ETH_ADDRESS && msg.value > purchaseFee) {
+      payable(purchaser).sendValue(msg.value - purchaseFee);
     }
   }
 }

@@ -6,6 +6,7 @@ const _ = require('lodash');
 
 const { contractDeploy } = require('../js-helpers/contractDeploy.js');
 const { contractSetup } = require('../js-helpers/contractSetup.js');
+const { getPermitSignature } = require('../js-helpers/erc20permit.js');
 const { log, toWei } = require('../js-helpers/utils');
 const EthSender = require('../build/contracts/contracts/test/EthSender.sol/EthSender.json');
 
@@ -29,19 +30,21 @@ describe("NftDistributor", function () {
     const [signerD, signerPO, signerFT, signer1, signer2, signer3] = await ethers.getSigners();
 
     // Deploy Core Contracts
-    const { taggr, taggrSettings, nftDistributor, taggrFactoryLazy721 } = await contractDeploy({fromUnitTests: true});
+    const { taggr, taggrSettings, customerSettings, nftDistributor, tokenEscrow } = await contractDeploy({fromUnitTests: true});
     await contractSetup({fromUnitTests: true});
 
     // Deploy Mocked Contracts
     const erc20factory = await smock.mock('ERC20Mintable');
     const erc20token = await erc20factory.deploy();
+    await erc20token.deployed();
 
     const erc721factory = await smock.mock('ERC721Mintable');
     const erc721token = await erc721factory.deploy();
+    await erc721token.deployed();
 
     const EthSenderFactory = new ethers.ContractFactory(EthSender.abi, EthSender.bytecode, signerD);
     const ethSender = await EthSenderFactory.deploy();
-    await ethSender.deployTransaction.wait();
+    await ethSender.deployed();
 
     await taggr.connect(signerD).managerUpdateCustomerAccount(user1, 1);
     const tx = await taggr.connect(signerD).managerLaunchNewProject(user1, TEST_PROJECT_ID, 'Name', 'Symbol', '', 1, 1000, 100);
@@ -49,7 +52,7 @@ describe("NftDistributor", function () {
     const projectContractAddress = _.get(_.find(txData.events, {event: 'CustomerProjectLaunched'}), 'args.contractAddress', '');
 
     return {
-      taggr, taggrSettings, nftDistributor, taggrFactoryLazy721, projectContractAddress,
+      taggr, taggrSettings, customerSettings, nftDistributor, tokenEscrow, projectContractAddress,
       erc20token, erc721token, ethSender,
       deployer, protocolOwner, foundationTreasury, user1, user2, user3,
       signerD, signerPO, signerFT, signer1, signer2, signer3
@@ -128,7 +131,72 @@ describe("NftDistributor", function () {
   });
 
   describe('NFT Purchases', async () => {
-    it('should collect payment for customers and store in escrow');
+    it('should collect payment for customers and store in escrow', async () => {
+      const {
+        customerSettings,
+        nftDistributor,
+        erc20token,
+        projectContractAddress,
+        tokenEscrow,
+        signer1,
+        signer2,
+        user2
+      } = await loadFixture(deployCoreFixture);
+
+      const tokenId = 1;
+      const purchasePrice = toWei('100');
+
+      // Setup
+      await customerSettings.connect(signer1).setProjectPurchaseFee(TEST_PROJECT_ID, erc20token.address, purchasePrice);
+
+      // Fund User to Buy NFT
+      await erc20token.mint(user2, toWei('500'));
+      // Approve Contract to move our Funds
+      await erc20token.connect(signer2).approve(nftDistributor.address, purchasePrice);
+
+      // Purchase NFT
+      await expect(nftDistributor.connect(signer2).purchaseNft(TEST_PROJECT_ID, projectContractAddress, tokenId))
+        .to.emit(nftDistributor, 'NftPurchased')
+        .withArgs(user2, projectContractAddress, tokenId, false);
+
+        // Confirm Token Balances
+        expect(await erc20token.balanceOf(tokenEscrow.address)).to.equal(purchasePrice);
+        expect(await erc20token.balanceOf(user2)).to.equal(toWei('400'));
+    });
+    it('should allow purchasing NFTs using tokens with permit feature', async () => {
+      const {
+        customerSettings,
+        nftDistributor,
+        erc20token,
+        projectContractAddress,
+        tokenEscrow,
+        signer1,
+        signer2,
+        user2
+      } = await loadFixture(deployCoreFixture);
+
+      const tokenId = 1;
+      const purchasePrice = toWei('100');
+      const deadline = ethers.constants.MaxUint256;
+
+      // Setup
+      await customerSettings.connect(signer1).setProjectPurchaseFee(TEST_PROJECT_ID, erc20token.address, purchasePrice);
+
+      // Fund User to Buy NFT
+      await erc20token.mint(user2, toWei('500'));
+
+      // User signs Permit Signature
+      const { v, r, s } = await getPermitSignature(signer2, erc20token, nftDistributor.address, purchasePrice, deadline);
+
+      // Purchase NFT with Permit
+      await expect(nftDistributor.connect(signer2).purchaseNftWithPermit(TEST_PROJECT_ID, projectContractAddress, tokenId, deadline, v, r, s))
+        .to.emit(nftDistributor, 'NftPurchased')
+        .withArgs(user2, projectContractAddress, tokenId, false);
+
+      // Confirm Token Balances
+      expect(await erc20token.balanceOf(tokenEscrow.address)).to.equal(purchasePrice);
+      expect(await erc20token.balanceOf(user2)).to.equal(toWei('400'));
+    });
     it('should only allow customers to withdraw their own payments');
     it('should collect minting fees for Taggr based on Plan Type');
     it('should not be able to purchase a claimed NFT');

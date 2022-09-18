@@ -29,7 +29,7 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "string",
         "name": "projectId",
         "type": "string"
@@ -54,26 +54,7 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "string",
-        "name": "projectId",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "fee",
-        "type": "uint256"
-      }
-    ],
-    "name": "ProjectPurchaseFeeSet",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
+        "indexed": true,
         "internalType": "string",
         "name": "projectId",
         "type": "string"
@@ -83,9 +64,15 @@
         "internalType": "address",
         "name": "feeToken",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
       }
     ],
-    "name": "ProjectPurchaseFeeTokenSet",
+    "name": "ProjectPurchaseFeeSet",
     "type": "event"
   },
   {
@@ -571,30 +558,17 @@
         "type": "string"
       },
       {
+        "internalType": "address",
+        "name": "feeToken",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "fee",
         "type": "uint256"
       }
     ],
     "name": "setProjectPurchaseFee",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "projectId",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "feeToken",
-        "type": "address"
-      }
-    ],
-    "name": "setProjectPurchaseFeeToken",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

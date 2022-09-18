@@ -5,17 +5,16 @@ pragma solidity >=0.8.0 <0.9.0;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 
-import "hardhat/console.sol";
-
 /**
- * @dev Extension of {ERC20} that adds a set of accounts with the {MinterRole},
- * which have permission to mint (create) new tokens as they see fit.
- *
- * At construction, the deployer of the contract is the only minter.
+ * @dev Extension of {ERC20} with "Permit" functionality (EIP-2612)
  */
-contract ERC20Mintable is ERC20, ERC20Permit {
+contract FakeUSDC is ERC20, ERC20Permit {
 
-  constructor () ERC20("MockERC20", "MERC20") ERC20Permit("MockERC20") {}
+  constructor () ERC20("FakeUSDC", "fUSDC") ERC20Permit("FakeUSDC") {}
+
+  function decimals() public view virtual override returns (uint8) {
+    return 6; // Mimic USDC
+  }
 
   /**
     * @dev See {ERC20-_mint}.

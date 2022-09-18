@@ -60,15 +60,12 @@ contract CustomerSettings is
   |       Permissioned Controls       |
   |__________________________________*/
 
-  function setProjectPurchaseFee(string memory projectId, uint256 fee) external onlyProjectManager(projectId) {
-    _projectPurchaseFee[_hash(projectId)] = fee;
-    emit ProjectPurchaseFeeSet(projectId, fee);
-  }
-
-  function setProjectPurchaseFeeToken(string memory projectId, address feeToken) external onlyProjectManager(projectId) {
+  function setProjectPurchaseFee(string memory projectId, address feeToken, uint256 fee) external onlyProjectManagerOrOwner(projectId) {
     require(feeToken != address(0), "Invalid address");
-    _projectPurchaseFeeToken[_hash(projectId)] = feeToken;
-    emit ProjectPurchaseFeeTokenSet(projectId, feeToken);
+    bytes32 projectHash = _hash(projectId);
+    _projectPurchaseFeeToken[projectHash] = feeToken;
+    _projectPurchaseFee[projectHash] = fee;
+    emit ProjectPurchaseFeeSet(projectId, feeToken, fee);
   }
 
   function setProjectFreeMint(string memory projectId, address freeMinter, uint256 freeMintAmount) external onlyProjectManager(projectId) {
@@ -126,6 +123,11 @@ contract CustomerSettings is
 
   modifier onlyProjectManager(string memory projectId) {
     require(_taggr.isProjectManager(projectId, _msgSender()), "Not project manager");
+    _;
+  }
+
+  modifier onlyProjectManagerOrOwner(string memory projectId) {
+    require(hasRole(OWNER_ROLE, _msgSender()) || _taggr.isProjectManager(projectId, _msgSender()), "Not owner or project manager");
     _;
   }
 
