@@ -26,11 +26,11 @@
     "start": "hardhat node --port 8545",
     "deploy-core": "yarn clean-test && hardhat deploy --tags core --network",
     "deploy-setup": "yarn clean-test && hardhat deploy --tags setup --network",
-    "setup": "hardhat deploy --tags setup --network",
-    "etherscan-verify": "hardhat deploy --tags verify --network",
     "create-accounts": "hardhat deploy --tags accounts --network",
     "mint-usdc": "hardhat deploy --tags mintusdc --network",
     "mint-pass": "hardhat deploy --tags freemintpass --network",
+    "merkle": "hardhat deploy --tags merkle --network",
+    "etherscan-verify": "hardhat deploy --tags verify --network",
     "gen-docs": "solidity-docgen -i contracts -o docs"
   },
   "devDependencies": {
