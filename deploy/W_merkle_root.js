@@ -43,7 +43,7 @@ module.exports = async () => {
   const nftDistributor = await NftDistributor.attach(ddNftDistributor.address);
 
   log(`  Setting Merkle Root for Project: "${'FUTURIST-CONF'}"`);
-  const tx = await nftDistributor.setMerkleRootForProject('FUTURIST-CONF', '0x2ff82cb7b93de5bd5218acb822f11e960ee1402f36d67001baf6c534eabbe8c3');
+  const tx = await nftDistributor.setMerkleRootForProject('FUTURIST-CONF', '0x3a018b6078df44154eaf1d4ad606677c011fad09614d77a03c1f020c310b9c87');
   await tx.wait();
 
   log(`\n  Merkle Root Set!`);
