@@ -61,7 +61,7 @@ contract CustomerSettings is
   |__________________________________*/
 
   function setProjectPurchaseFee(string memory projectId, address feeToken, uint256 fee) external onlyProjectManagerOrOwner(projectId) {
-    require(feeToken != address(0), "Invalid address");
+    require(feeToken != address(0), "CS:E-103");
     bytes32 projectHash = _hash(projectId);
     _projectPurchaseFeeToken[projectHash] = feeToken;
     _projectPurchaseFee[projectHash] = fee;
@@ -69,23 +69,23 @@ contract CustomerSettings is
   }
 
   function setProjectFreeMint(string memory projectId, address freeMinter, uint256 freeMintAmount) external onlyProjectManager(projectId) {
-    require(freeMinter != address(0), "Invalid address");
+    require(freeMinter != address(0), "CS:E-103");
     _projectFreeMintAccounts[_hash(projectId)][freeMinter] = freeMintAmount;
     emit ProjectFreeMinterSet(projectId, freeMinter, freeMintAmount);
   }
 
   function decrementProjectFreeMint(string memory projectId, address freeMinter, uint256 amount) external override onlyDistributor {
-    require(freeMinter != address(0), "Invalid address");
+    require(freeMinter != address(0), "CS:E-103");
     _projectFreeMintAccounts[_hash(projectId)][freeMinter] -= amount;
   }
 
   function setTaggr(address taggr) external onlyRole(OWNER_ROLE) {
-    require(taggr != address(0), "Invalid address");
+    require(taggr != address(0), "CS:E-103");
     _taggr = ITaggr(taggr);
   }
 
   function setNftDistributor(address nftDistributor) external onlyRole(OWNER_ROLE) {
-    require(nftDistributor != address(0), "Invalid address");
+    require(nftDistributor != address(0), "CS:E-103");
     _nftDistributor = INftDistributor(nftDistributor);
   }
 
@@ -122,17 +122,17 @@ contract CustomerSettings is
 
 
   modifier onlyProjectManager(string memory projectId) {
-    require(_taggr.isProjectManager(projectId, _msgSender()), "Not project manager");
+    require(_taggr.isProjectManager(projectId, _msgSender()), "CS:E-102");
     _;
   }
 
   modifier onlyProjectManagerOrOwner(string memory projectId) {
-    require(hasRole(OWNER_ROLE, _msgSender()) || _taggr.isProjectManager(projectId, _msgSender()), "Not owner or project manager");
+    require(hasRole(OWNER_ROLE, _msgSender()) || _taggr.isProjectManager(projectId, _msgSender()), "CS:E-102");
     _;
   }
 
   modifier onlyDistributor() {
-    require(_msgSender() == address(_nftDistributor), "Invalid caller");
+    require(_msgSender() == address(_nftDistributor), "CS:E-102");
     _;
   }
 }

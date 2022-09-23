@@ -113,8 +113,8 @@ contract Taggr is
 
   function createCustomerAccount(uint256 planType) external override {
     address customer = _msgSender();
-    require(_customerPlanType[customer] == 0, "Customer already exists");
-    require(_taggrSettings.isActivePlanType(planType), "Invalid plan type");
+    require(_customerPlanType[customer] == 0, "T:E-003");
+    require(_taggrSettings.isActivePlanType(planType), "T:E-202");
 
     // Collect Membership Fee for New Customers
     uint256 fee = _taggrSettings.getMembershipFee();
@@ -138,7 +138,7 @@ contract Taggr is
     uint96 royaltiesPct
   ) public override returns (address contractAddress) {
     address customer = _msgSender();
-    require(_customerSelfServe[customer], "Self-serve not enabled");
+    require(_customerSelfServe[customer], "T:E-203");
 
     // Collect Project Fee
     uint256 fee = _taggrSettings.getProjectLaunchFee();
@@ -167,7 +167,7 @@ contract Taggr is
 
   function updateProjectManagers(string memory projectId, address[] memory managers, bool[] memory managerStates) public {
     bytes32 projectHash = _hash(projectId);
-    require(_projectOwner[projectHash] == _msgSender(), "Not owner of project");
+    require(_projectOwner[projectHash] == _msgSender(), "T:E-102");
     _updateProjectManagers(projectHash, managers, managerStates);
   }
 
@@ -185,20 +185,20 @@ contract Taggr is
   }
 
   function setTaggrSettings(address taggrSettings) external onlyRole(MANAGER_ROLE) {
-    require(taggrSettings != address(0), "Invalid address");
+    require(taggrSettings != address(0), "T:E-103");
     _taggrSettings = ITaggrSettings(taggrSettings);
     emit SettingsSet(taggrSettings);
   }
 
   function setNftDistributor(address distributor) external onlyRole(MANAGER_ROLE) {
-    require(distributor != address(0), "Invalid address");
+    require(distributor != address(0), "T:E-103");
     _nftDistributor = distributor;
     emit NftDistributorSet(distributor);
   }
 
   function registerNftFactory(uint256 factoryId, address nftFactory) external onlyRole(MANAGER_ROLE) {
-    require(nftFactory != address(0), "Invalid address");
-    require(address(_nftFactories[factoryId]) == address(0), "Factory ID already in use");
+    require(nftFactory != address(0), "T:E-103");
+    require(address(_nftFactories[factoryId]) == address(0), "T:E-003");
     _nftFactories[factoryId] = ITaggrNftFactory(nftFactory);
     emit NftFactoryRegistered(nftFactory, factoryId);
   }
@@ -302,10 +302,10 @@ contract Taggr is
 
   function _validateCustomerProject(address customerAccount, bytes32 projectIdHash) internal view {
     // Validate Customer
-    require(_customerPlanType[customerAccount] > 0, "Not a customer");
+    require(_customerPlanType[customerAccount] > 0, "T:E-102");
 
     // Validate Project ID
-    require(_projectOwner[projectIdHash] == address(0), "Project ID already exists");
+    require(_projectOwner[projectIdHash] == address(0), "T:E-003");
   }
 
 
@@ -359,7 +359,7 @@ contract Taggr is
 
 
   function _updateProjectManagers(bytes32 projectIdHash, address[] memory managers, bool[] memory managerStates) internal {
-    require(managers.length == managerStates.length, "Array-length mismatch");
+    require(managers.length == managerStates.length, "T:E-204");
     uint256 count = managers.length;
     for (uint256 i = 0; i < count; i++) {
       _projectManagerAccounts[projectIdHash][managers[i]] = managerStates[i];

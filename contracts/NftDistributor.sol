@@ -98,9 +98,12 @@ contract NftDistributor is
     nonReentrant
   {
     address to = _msgSender();
+
     bool isClaimed = _isTokenFullyClaimed[contractAddress][tokenId];
+    require(!isClaimed, "ND:E-402");
+
     bool validClaim = _hasValidClaim(contractAddress, merkleNode, merkleProof);
-    require(!isClaimed && validClaim, "TL721:E-");
+    require(validClaim, "ND:E-403");
 
     // Mark NFT as Fully-Claimed
     _setNodeClaimed(contractAddress, merkleNode);
@@ -123,11 +126,11 @@ contract NftDistributor is
     nonReentrant
   {
     bool isClaimed = _isTokenFullyClaimed[contractAddress][tokenId];
-    require(!isClaimed, "TL721:E-");
+    require(!isClaimed, "ND:E-402");
 
     address purchaser = _msgSender();
     uint256 freeMintAmount = _customerSettings.getProjectFreeMintAmount(projectId, purchaser);
-    require(freeMintAmount > 0, "TL721:E-");
+    require(freeMintAmount > 0, "ND:E-404");
 
     // Mark NFT as Fully-Claimed
     _isTokenFullyClaimed[contractAddress][tokenId] = true;
@@ -151,7 +154,7 @@ contract NftDistributor is
     nonReentrant
   {
     bool isClaimed = _isTokenFullyClaimed[contractAddress][tokenId];
-    require(!isClaimed, "TL721:E-");
+    require(!isClaimed, "ND:E-402");
 
     // Collect Payment for Customer
     address purchaser = _msgSender();
@@ -186,7 +189,7 @@ contract NftDistributor is
     nonReentrant
   {
     bool isClaimed = _isTokenFullyClaimed[contractAddress][tokenId];
-    require(!isClaimed, "TL721:E-");
+    require(!isClaimed, "ND:E-402");
 
     // Collect Payment for Customer
     address purchaser = _msgSender();
@@ -208,14 +211,14 @@ contract NftDistributor is
 
 
   function setMerkleRoot(string memory projectId, bytes32 merkleRoot) public virtual {
-    require(_taggr.isProjectManager(projectId, _msgSender()), "Not project manager");
+    require(_taggr.isProjectManager(projectId, _msgSender()), "ND:E-102");
 
     address contractAddress = _taggr.getProjectContract(projectId);
     _setMerkleRoot(contractAddress, merkleRoot);
   }
 
   function signalPhysicalDelivery(string memory projectId, uint256 tokenId) public virtual {
-    require(_taggr.isProjectManager(projectId, _msgSender()), "Not project manager");
+    require(_taggr.isProjectManager(projectId, _msgSender()), "ND:E-102");
 
     address contractAddress = _taggr.getProjectContract(projectId);
     emit PhysicalDeliveryTimestamp(projectId, contractAddress, tokenId, block.timestamp);
@@ -235,25 +238,25 @@ contract NftDistributor is
   }
 
   function setTaggr(address taggr) external onlyRole(OWNER_ROLE) {
-    require(taggr != address(0), "Invalid address");
+    require(taggr != address(0), "ND:E-103");
     _taggr = ITaggr(taggr);
     emit TaggrSet(taggr);
   }
 
   function setTaggrSettings(address taggrSettings) external onlyRole(OWNER_ROLE) {
-    require(taggrSettings != address(0), "Invalid address");
+    require(taggrSettings != address(0), "ND:E-103");
     _taggrSettings = ITaggrSettings(taggrSettings);
     emit TaggrSettingsSet(taggrSettings);
   }
 
   function setCustomerSettings(address customerSettings) external onlyRole(OWNER_ROLE) {
-    require(customerSettings != address(0), "Invalid address");
+    require(customerSettings != address(0), "ND:E-103");
     _customerSettings = ICustomerSettings(customerSettings);
     emit CustomerSettingsSet(customerSettings);
   }
 
   function setTokenEscrow(address tokenEscrow) external onlyRole(OWNER_ROLE) {
-    require(tokenEscrow != address(0), "Invalid address");
+    require(tokenEscrow != address(0), "ND:E-103");
     _escrow = ITokenEscrow(tokenEscrow);
     emit TokenEscrowSet(tokenEscrow);
   }
@@ -303,7 +306,7 @@ contract NftDistributor is
       customerFee -= taggrFee;
 
       if (purchaseToken == ETH_ADDRESS) {
-        require(msg.value >= purchaseFee, "Insufficient payment");
+        require(msg.value >= purchaseFee, "ND:E-405");
         _escrow.deposit{value: customerFee}(customerAccount);
         _escrow.deposit{value: taggrFee}(_taggrPaymentReceiver);
       } else {

@@ -140,7 +140,7 @@ contract TokenEscrow is ITokenEscrow, Initializable, OwnableUpgradeable, Blackho
   }
 
   function setNftDistributor(address nftDistributor) external override onlyOwner {
-    require(nftDistributor != address(0), "Invalid address");
+    require(nftDistributor != address(0), "TE:E-103");
     _nftDistributor = nftDistributor;
   }
 
@@ -197,7 +197,7 @@ contract TokenEscrow is ITokenEscrow, Initializable, OwnableUpgradeable, Blackho
 
 
   modifier onlyDistributor() {
-    require(_msgSender() == _nftDistributor, "Invalid caller");
+    require(_msgSender() == _nftDistributor, "TE:E-102");
     _;
   }
 }

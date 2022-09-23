@@ -78,9 +78,7 @@ describe("NftDistributor", function () {
       const tree = new MerkleTree(leaves, keccak256, { sort: true });
       const root = tree.getHexRoot();
       const leaf = keccak256(leavesSrc[0]);
-      console.log('>>>>> LEAF: ', leaf);
       const proof = tree.getHexProof(leaf);
-      console.log('>>>>> PROOF: ', proof);
 
       await nftDistributor.connect(signer1).setMerkleRoot(TEST_PROJECT_ID, root);
 

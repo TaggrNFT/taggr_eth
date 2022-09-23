@@ -12,51 +12,30 @@ Codes:
     E-000 - Failure
     E-001 - Success
     E-002 - ALREADY_INIT
+    E-003 - NOT_UNIQUE
 
   1. Permission & Control
     E-100 - [--Unused--]
     E-101 - PAUSED
-    E-102 -
-    E-103 -
-    E-104 -
-    E-105 -
-    E-106 -
-    E-107 -
-    E-108 -
-    E-109 -
+    E-102 - INVALID_CALLER
+    E-103 - ADDRESS_ZERO
 
   2. Find, Inequalities & Range
     E-200 - [--Unused--]
-    E-201 - INVALID_INDEX,
-    E-202 -
-    E-203 -
-    E-204 -
-    E-205 -
-    E-206 -
-    E-207 -
-    E-208 -
-    E-209 -
+    E-201 - INVALID_INDEX
+    E-202 - INVALID_PLAN_TYPE
+    E-203 - OPTION_NOT_ENABLED
+    E-204 - ARRAY_LEN_MISMATCH
 
   3. Availability & Time
     E-300 - [--Unused--]
     E-301 - DATE NOT REACHED
     E-302 - BLOCK NOT REACHED
-    E-303 -
-    E-304 -
-    E-305 -
-    E-306 -
-    E-307 -
-    E-308 -
-    E-309 -
 
   4. Tokens, Funds & Finance
     E-400 - [--Unused--]
     E-401 - TRANSFER_FAILED
     E-402 - ALREADY_CLAIMED
     E-403 - INVALID_PROOF
-    E-404 -
-    E-405 -
-    E-406 -
-    E-407 -
-    E-408 -
-    E-409 -
+    E-404 - NO_FREE_PASS
+    E-405 - INSUFFICIENT_PAYMENT

@@ -46,7 +46,7 @@ contract TaggrBase721 is
     virtual
     override
   {
-    require(!_initialized, "Already initialized");
+    require(!_initialized, "TB:E-002");
     _tokenDistributor = _distributor;
     _contractName = _name;
     _contractSymbol = _symbol;
@@ -96,12 +96,12 @@ contract TaggrBase721 is
   |__________________________________*/
 
   function distributeToken(address to, uint256 tokenId) external virtual override {
-    require(msg.sender == _tokenDistributor, "TB721:E-");
+    require(msg.sender == _tokenDistributor, "TB721:E-102");
     _safeMint(to, tokenId);
   }
 
   function distributeTokenWithURI(address to, uint256 tokenId, string memory tokenUri) external virtual override {
-    require(msg.sender == _tokenDistributor, "TB721:E-");
+    require(msg.sender == _tokenDistributor, "TB721:E-102");
     _safeMint(to, tokenId);
     _setTokenURI(tokenId, tokenUri);
   }
@@ -130,14 +130,14 @@ contract TaggrBase721 is
 
   function mintToken(address to, uint256 tokenId) external virtual onlyOwner {
     if (_tokenDistributor != address(0)) {
-      require(!INftDistributor(_tokenDistributor).isFullyClaimed(address(this), tokenId), "TB721:E-");
+      require(!INftDistributor(_tokenDistributor).isFullyClaimed(address(this), tokenId), "TB721:E-402");
     }
     _safeMint(to, tokenId);
   }
 
   function mintTokenWithURI(address to, uint256 tokenId, string memory tokenUri) external virtual onlyOwner {
     if (_tokenDistributor != address(0)) {
-      require(!INftDistributor(_tokenDistributor).isFullyClaimed(address(this), tokenId), "TB721:E-");
+      require(!INftDistributor(_tokenDistributor).isFullyClaimed(address(this), tokenId), "TB721:E-402");
     }
     _safeMint(to, tokenId);
     _setTokenURI(tokenId, tokenUri);

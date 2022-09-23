@@ -23,7 +23,7 @@ contract BlackholePrevention {
   event WithdrawStuckERC1155(address indexed receiver, address indexed tokenAddress, uint256 indexed tokenId, uint256 amount);
 
   function _withdrawEther(address payable receiver, uint256 amount) internal virtual {
-    require(receiver != address(0x0), "BHP:E-403");
+    require(receiver != address(0x0), "BHP:E-103");
     if (address(this).balance >= amount) {
       receiver.sendValue(amount);
       emit WithdrawStuckEther(receiver, amount);
@@ -31,7 +31,7 @@ contract BlackholePrevention {
   }
 
   function _withdrawERC20(address payable receiver, address tokenAddress, uint256 amount) internal virtual {
-    require(receiver != address(0x0), "BHP:E-403");
+    require(receiver != address(0x0), "BHP:E-103");
     if (IERC20Upgradeable(tokenAddress).balanceOf(address(this)) >= amount) {
       IERC20Upgradeable(tokenAddress).safeTransfer(receiver, amount);
       emit WithdrawStuckERC20(receiver, tokenAddress, amount);
@@ -39,7 +39,7 @@ contract BlackholePrevention {
   }
 
   function _withdrawERC721(address payable receiver, address tokenAddress, uint256 tokenId) internal virtual {
-    require(receiver != address(0x0), "BHP:E-403");
+    require(receiver != address(0x0), "BHP:E-103");
     if (IERC721Upgradeable(tokenAddress).ownerOf(tokenId) == address(this)) {
       IERC721Upgradeable(tokenAddress).transferFrom(address(this), receiver, tokenId);
       emit WithdrawStuckERC721(receiver, tokenAddress, tokenId);
@@ -47,7 +47,7 @@ contract BlackholePrevention {
   }
 
   function _withdrawERC1155(address payable receiver, address tokenAddress, uint256 tokenId, uint256 amount) internal virtual {
-    require(receiver != address(0x0), "BHP:E-403");
+    require(receiver != address(0x0), "BHP:E-103");
     if (IERC1155Upgradeable(tokenAddress).balanceOf(address(this), tokenId) >= amount) {
       IERC1155Upgradeable(tokenAddress).safeTransferFrom(address(this), receiver, tokenId, amount, "");
       emit WithdrawStuckERC1155(receiver, tokenAddress, tokenId, amount);

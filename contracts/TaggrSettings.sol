@@ -85,13 +85,13 @@ contract TaggrSettings is
   }
 
   function setMembershipFeeToken(address feeToken) external onlyRole(OWNER_ROLE) {
-    require(feeToken != address(0), "Invalid address");
+    require(feeToken != address(0), "TS:E-103");
     membershipFeeToken = feeToken;
     emit MembershipFeeTokenSet(feeToken);
   }
 
   function setProjectLaunchFeeToken(address feeToken) external onlyRole(OWNER_ROLE) {
-    require(feeToken != address(0), "Invalid address");
+    require(feeToken != address(0), "TS:E-103");
     projectLaunchFeeToken = feeToken;
     emit ProjectLaunchFeeTokenSet(feeToken);
   }
