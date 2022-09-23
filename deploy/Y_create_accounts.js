@@ -92,12 +92,6 @@ module.exports = async () => {
 
   const ddTaggr = getDeployData('Taggr', chainId);
   const ddCustomerSettings = getDeployData('CustomerSettings', chainId);
-  let ddFakeUSDC;
-  if (!isProd) {
-    ddFakeUSDC = getDeployData('FakeUSDC', chainId);
-  }
-  // if (isHardhat) { return; }
-
   const networkName = network.name === 'homestead' ? 'mainnet' : network.name;
 
   const taggrBaseUri = isProd
@@ -122,13 +116,11 @@ module.exports = async () => {
   const CustomerSettings = await ethers.getContractFactory('CustomerSettings');
   const customerSettings = await CustomerSettings.attach(ddCustomerSettings.address);
 
-  let fakeUSDC;
+  let usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'; // Mainnet
   if (!isProd) {
-    log('  Loading FakeUSDC from: ', ddFakeUSDC.address);
-    const FakeUSDC = await ethers.getContractFactory('FakeUSDC');
-    fakeUSDC = await FakeUSDC.attach(ddFakeUSDC.address);
+    const ddFakeUSDC = getDeployData('FakeUSDC', chainId);
+    usdcAddress = ddFakeUSDC.address;
   }
-
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Customer: Taggr
@@ -145,9 +137,9 @@ module.exports = async () => {
     // baseTokenUri    : 'https://us-central1-taggr-nft-staging.cloudfunctions.net/api/meta/TAGGR-TAG-SWAG/',
     nftFactoryId    : CONTRACT_TYPE.Lazy721,
     max             : 100000,
-    royalties       : 200,  // 2%
+    royalties       : 300,  // 3%
     selfServe       : true,
-    purchaseToken   : isProd ? '__USDC__' : fakeUSDC.address,
+    purchaseToken   : usdcAddress,
     purchaseFee     : toUSDC('350'),
   };
   await _createCustomer('1', taggr, project);
@@ -165,7 +157,7 @@ module.exports = async () => {
     max             : 100000,
     royalties       : 200,  // 2%
     selfServe       : true,
-    purchaseToken   : isProd ? '__USDC__' : fakeUSDC.address,
+    purchaseToken   : usdcAddress,
     purchaseFee     : toUSDC('350'),
   };
   await _deployProject('3', taggr, customerSettings, project, chainId, networkName);

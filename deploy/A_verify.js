@@ -31,6 +31,7 @@ module.exports = async () => {
   // Protocol
   await verifyProxyContract({name: 'Taggr', networkName});
   await verifyProxyContract({name: 'TaggrSettings', networkName});
+  await verifyProxyContract({name: 'CustomerSettings', networkName});
   await verifyProxyContract({name: 'NftDistributor', networkName});
   await verifyProxyContract({name: 'TaggrFactoryLazy721', networkName});
   await verifyContract({name: 'TaggrLazy721', networkName});

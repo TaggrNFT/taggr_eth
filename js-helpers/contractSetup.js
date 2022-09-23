@@ -34,6 +34,11 @@ const contractSetup = async (args = {fromUnitTests: false}) => {
   const ddTokenEscrow = getDeployData('TokenEscrow', chainId);
   const ddTaggrFactoryLazy721 = getDeployData('TaggrFactoryLazy721', chainId);
 
+  const USDC = {
+    '1': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    '5': '0x07865c6e87b9f70255377e024ace6630c1eaa37f',
+  };
+
   if (!args.fromUnitTests) {
     log('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
     log('Taggr - Contract Configurations');
@@ -102,12 +107,12 @@ const contractSetup = async (args = {fromUnitTests: false}) => {
     await taggrSettings.setProjectLaunchFee(toWei('1.0'))
   );
 
-  await executeTx('2-c', 'TaggrSettings: Membership Fee Token', !args.fromUnitTests, async () =>
-    await taggrSettings.setMembershipFeeToken('0x07865c6e87b9f70255377e024ace6630c1eaa37f') // USDC on Goerli
+  await executeTx('2-c', `TaggrSettings: Membership Fee Token: ${USDC[`${chainId}`]}`, !args.fromUnitTests, async () =>
+    await taggrSettings.setMembershipFeeToken(USDC[`${chainId}`]) // USDC
   );
 
-  await executeTx('2-d', 'TaggrSettings: Project Launch Fee Token', !args.fromUnitTests, async () =>
-    await taggrSettings.setProjectLaunchFeeToken('0x07865c6e87b9f70255377e024ace6630c1eaa37f') // USDC on Goerli
+  await executeTx('2-d', `TaggrSettings: Project Launch Fee Token: ${USDC[`${chainId}`]}`, !args.fromUnitTests, async () =>
+    await taggrSettings.setProjectLaunchFeeToken(USDC[`${chainId}`]) // USDC
   );
 
   await executeTx('2-e', 'TaggrSettings: Set Minting Fee by Plan Type (1=Free)', !args.fromUnitTests, async () =>

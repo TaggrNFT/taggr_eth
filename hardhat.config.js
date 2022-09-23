@@ -97,9 +97,20 @@ module.exports = {
         count: 10,
       },
     },
+    mainnet: {
+        url: `https://mainnet.infura.io/v3/${process.env.INFURA_APIKEY}`,
+        // url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_APIKEY}`,
+        gasPrice: 9e9,
+        accounts: {
+            mnemonic: mnemonic.mainnet,
+            initialIndex: 0,
+            count: 10,
+        }
+    },
   },
   etherscan: {
     apiKey: {
+      mainnet: process.env.ETHERSCAN_APIKEY,
       ropsten: process.env.ETHERSCAN_APIKEY,
       goerli: process.env.ETHERSCAN_APIKEY,
       kovan: process.env.ETHERSCAN_APIKEY,
