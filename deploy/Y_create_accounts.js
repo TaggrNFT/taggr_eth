@@ -80,6 +80,12 @@ const _deployProject = async (txId, taggr, customerSettings, project, chainId, n
   log(`   - Deployment saved to: "deployments/${networkName}/${project.projectId}.json`);
 };
 
+const _setPurchaseFee = async (txId, customerSettings, project) => {
+  log(`[TX-${txId}-a] Taggr: Setting Purchase Fee for Project ${project.name}: ${project.projectId}`);
+  const tx = await customerSettings.setProjectPurchaseFee(project.projectId, project.purchaseToken, project.purchaseFee);
+  await tx.wait();
+}
+
 
 module.exports = async () => {
   const { deployer, protocolOwner } = await getNamedAccounts();
@@ -126,42 +132,61 @@ module.exports = async () => {
   // Customer: Taggr
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  project = {
-    customer        : 'Taggr',
-    customerAddress : protocolOwner,
-    planType        : MEMBERSHIP_PLAN_TYPE.business,
-    projectId       : 'FUTURIST-CONF',
-    name            : 'Taggr - Futurist Conference Swag',
-    symbol          : 'TAGGR-FC',
-    baseTokenUri    : `${taggrBaseUri}/FUTURIST-CONF/`,
-    // baseTokenUri    : 'https://us-central1-taggr-nft-staging.cloudfunctions.net/api/meta/TAGGR-TAG-SWAG/',
-    nftFactoryId    : CONTRACT_TYPE.Lazy721,
-    max             : 100000,
-    royalties       : 300,  // 3%
-    selfServe       : true,
-    purchaseToken   : usdcAddress,
-    purchaseFee     : toUSDC('350'),
-  };
-  await _createCustomer('1', taggr, project);
-  await _deployProject('2', taggr, customerSettings, project, chainId, networkName);
+  // project = {
+  //   customer        : 'Taggr',
+  //   customerAddress : protocolOwner, // MAINNET = 0x5Fd79eB99b7a0CF9c715538ac40074A7f187A28c
+  //   planType        : MEMBERSHIP_PLAN_TYPE.business,
+  //   projectId       : 'FUTURIST-CONF',
+  //   name            : 'Taggr - Futurist Conference Swag',
+  //   symbol          : 'TAGGR-FC',
+  //   baseTokenUri    : `${taggrBaseUri}/FUTURIST-CONF/`,
+  //   // baseTokenUri    : 'https://us-central1-taggr-nft-staging.cloudfunctions.net/api/meta/TAGGR-TAG-SWAG/',
+  //   nftFactoryId    : CONTRACT_TYPE.Lazy721,
+  //   max             : 100000,
+  //   royalties       : 300,  // 3%
+  //   selfServe       : true,
+  //   purchaseToken   : usdcAddress,
+  //   purchaseFee     : toUSDC('450'),
+  // };
+  // await _createCustomer('1', taggr, project);
+  // await _deployProject('2', taggr, customerSettings, project, chainId, networkName);
 
-  project = {
-    customer        : 'Taggr',
-    customerAddress : protocolOwner,
-    planType        : MEMBERSHIP_PLAN_TYPE.business,
-    projectId       : 'DIRTY-NERD',
-    name            : 'Taggr - Dirty Nerd Exclusive',
-    symbol          : 'TAGGR-DN',
-    baseTokenUri    : `${taggrBaseUri}/DIRTY-NERD/`,
-    nftFactoryId    : CONTRACT_TYPE.Lazy721,
-    max             : 100000,
-    royalties       : 200,  // 2%
-    selfServe       : true,
-    purchaseToken   : usdcAddress,
-    purchaseFee     : toUSDC('350'),
-  };
-  await _deployProject('3', taggr, customerSettings, project, chainId, networkName);
+  // project = {
+  //   customer        : 'Taggr',
+  //   customerAddress : protocolOwner, // MAINNET = 0x5Fd79eB99b7a0CF9c715538ac40074A7f187A28c
+  //   planType        : MEMBERSHIP_PLAN_TYPE.business,
+  //   projectId       : 'DIRTY-NERD',
+  //   name            : 'Taggr - Dirty Nerd Exclusive',
+  //   symbol          : 'TAGGR-DN',
+  //   baseTokenUri    : `${taggrBaseUri}/DIRTY-NERD/`,
+  //   nftFactoryId    : CONTRACT_TYPE.Lazy721,
+  //   max             : 100000,
+  //   royalties       : 200,  // 2%
+  //   selfServe       : true,
+  //   purchaseToken   : usdcAddress,
+  //   purchaseFee     : toUSDC('450'),
+  // };
+  // await _deployProject('3', taggr, customerSettings, project, chainId, networkName);
 
+  // project = {
+  //   customer        : 'Rosa',
+  //   customerAddress : '0x51D33ab709B04B235F84fd2333c93F747645Ceea',
+  //   planType        : MEMBERSHIP_PLAN_TYPE.business,
+  //   projectId       : 'ROYAL-ROSE-ART-GALLERY',
+  //   name            : 'Royal Rose Art Gallery',
+  //   symbol          : 'ROSART',
+  //   baseTokenUri    : `${taggrBaseUri}/ROYAL-ROSE/`,
+  //   nftFactoryId    : CONTRACT_TYPE.Lazy721,
+  //   max             : 100000,
+  //   royalties       : 700,  // 7%
+  //   selfServe       : true,
+  //   purchaseToken   : usdcAddress,
+  //   purchaseFee     : toUSDC('100'),
+  // };
+  // await _createCustomer('4', taggr, project);
+  // await _deployProject('5', taggr, customerSettings, project, chainId, networkName);
+
+  // await _setPurchaseFee('6', customerSettings, project);
 
   log(`\n  Account Creation Complete!`);
   log('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');

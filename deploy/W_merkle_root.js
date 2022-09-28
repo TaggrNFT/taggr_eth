@@ -42,10 +42,17 @@ module.exports = async () => {
   const NftDistributor = await ethers.getContractFactory('NftDistributor');
   const nftDistributor = await NftDistributor.attach(ddNftDistributor.address);
 
-  const merkleRoot = '0x577d2c5d090b70b215d5b4a2e043b797de7841cee8d39d0acfbc7de16a820ae6';
-  log(`  Setting Merkle Root for Project: "${'FUTURIST-CONF'}" with Root: ${merkleRoot}`);
-  const tx = await nftDistributor.setMerkleRootForProject('FUTURIST-CONF', merkleRoot);
-  await tx.wait();
+  let merkleRoot, tx;
+
+  // merkleRoot = '0x55fcb0707a95d7aed30a50e2f005d917c09e836ce4a4a78c9f26516c66d66b88';
+  // log(`  Setting Merkle Root for Project: "${'FUTURIST-CONF'}" with Root: ${merkleRoot}`);
+  // tx = await nftDistributor.setMerkleRootForProject('FUTURIST-CONF', merkleRoot);
+  // await tx.wait();
+
+  // merkleRoot = '0x360d7166ebd2be5d02fe7b72ac03ca7e80aa896d163a79c69e398b48aa968a7b';
+  // log(`  Setting Merkle Root for Project: "${'ROYAL-ROSE-ART-GALLERY'}" with Root: ${merkleRoot}`);
+  // tx = await nftDistributor.setMerkleRootForProject('ROYAL-ROSE-ART-GALLERY', merkleRoot);
+  // await tx.wait();
 
   log(`\n  Merkle Root Set!`);
   log('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
