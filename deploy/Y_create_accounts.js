@@ -188,6 +188,25 @@ module.exports = async () => {
 
   // await _setPurchaseFee('6', customerSettings, project);
 
+
+  project = {
+    customer        : 'UncleNate',
+    customerAddress : '',
+    planType        : MEMBERSHIP_PLAN_TYPE.business,
+    projectId       : 'UNCLE-NATE-DEMO',
+    name            : 'Uncle Nate Demo',
+    symbol          : 'UNCLE-NATE-DEMO',
+    baseTokenUri    : `${taggrBaseUri}/UNCLE-NATE-DEMO/`,
+    nftFactoryId    : CONTRACT_TYPE.Lazy721,
+    max             : 100000,
+    royalties       : 700,  // 7%
+    selfServe       : true,
+    purchaseToken   : usdcAddress,
+    purchaseFee     : toUSDC('100'),
+  };
+  await _createCustomer('6', taggr, project);
+  await _deployProject('7', taggr, customerSettings, project, chainId, networkName);
+
   log(`\n  Account Creation Complete!`);
   log('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
 };
