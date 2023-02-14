@@ -66,7 +66,7 @@ module.exports = {
     goerli: {
       url: `https://goerli.infura.io/v3/${process.env.INFURA_APIKEY}`,
       // url: `https://eth-goerli.alchemyapi.io/v2/${process.env.ALCHEMY_APIKEY_GOERLI}`,
-      gasPrice: 4e9,
+      gasPrice: 1e9,
       accounts: {
         mnemonic: mnemonic.testnet,
         initialIndex: 0,
