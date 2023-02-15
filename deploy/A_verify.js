@@ -22,7 +22,7 @@ module.exports = async () => {
   log('Charged Particles: Contract Verification');
   log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
 
-  log(`  Using Network: ${network} (${chainId})`);
+  log(`  Using Network: ${networkName} (${chainId})`);
   log('  Using Accounts:');
   log('  - Deployer:    ', deployer);
   log('  - Owner:       ', protocolOwner);

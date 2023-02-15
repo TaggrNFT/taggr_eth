@@ -215,6 +215,7 @@ contract NftDistributor is
 
     address contractAddress = _taggr.getProjectContract(projectId);
     _setMerkleRoot(contractAddress, merkleRoot);
+    emit MerkleRootSet(projectId, contractAddress, merkleRoot);
   }
 
   function signalPhysicalDelivery(string memory projectId, uint256 tokenId) public virtual {

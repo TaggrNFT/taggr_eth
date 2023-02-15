@@ -36,7 +36,7 @@ const contractSetup = async (args = {fromUnitTests: false}) => {
 
   const USDC = {
     '1': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-    '5': '0x07865c6e87b9f70255377e024ace6630c1eaa37f',
+    '5': '0xd38b9B920abdc08b187F169d13c73aFC8A09b391',
   };
 
   if (!args.fromUnitTests) {

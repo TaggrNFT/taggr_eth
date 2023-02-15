@@ -188,6 +188,10 @@ module.exports = async () => {
 
   // await _setPurchaseFee('6', customerSettings, project);
 
+  //
+  // GOERLI
+  //
+
   // project = {
   //   customer        : 'UncleNate',
   //   customerAddress : '0xD90adE64094D73599CfA3F6353DA76cb64C029E9',
@@ -203,8 +207,8 @@ module.exports = async () => {
   //   purchaseToken   : usdcAddress,
   //   purchaseFee     : toUSDC('100'),
   // };
-  // await _createCustomer('6', taggr, project);
-  // await _deployProject('7', taggr, customerSettings, project, chainId, networkName);
+  // await _createCustomer('7', taggr, project);
+  // await _deployProject('8', taggr, customerSettings, project, chainId, networkName);
 
   // project = {
   //   customer        : 'TaggrAuto',
@@ -212,7 +216,7 @@ module.exports = async () => {
   //   planType        : MEMBERSHIP_PLAN_TYPE.business,
   //   projectId       : 'taggr-auto-demo',
   //   name            : 'Taggr Auto Demo',
-  //   symbol          : 'TAUTOD',
+  //   symbol          : 'T-AUTO-D',
   //   baseTokenUri    : `${taggrBaseUri}/taggr-auto-demo/`,
   //   nftFactoryId    : CONTRACT_TYPE.Lazy721,
   //   max             : 100000,
@@ -221,8 +225,48 @@ module.exports = async () => {
   //   purchaseToken   : usdcAddress,
   //   purchaseFee     : toUSDC('100'),
   // };
-  // await _createCustomer('6', taggr, project);
-  // await _deployProject('7', taggr, customerSettings, project, chainId, networkName);
+  // await _createCustomer('9', taggr, project);
+  // await _deployProject('10', taggr, customerSettings, project, chainId, networkName);
+
+  //
+  // MAINNET
+  //
+
+  // project = {
+  //   customer        : 'UncleNate',
+  //   customerAddress : '0xD90adE64094D73599CfA3F6353DA76cb64C029E9',
+  //   planType        : MEMBERSHIP_PLAN_TYPE.business,
+  //   projectId       : 'cortex-glass',
+  //   name            : 'Cortex Glass Apes Demo',
+  //   symbol          : 'CGA',
+  //   baseTokenUri    : `${taggrBaseUri}/cortex-glass/`,
+  //   nftFactoryId    : CONTRACT_TYPE.Lazy721,
+  //   max             : 100000,
+  //   royalties       : 700,  // 7%
+  //   selfServe       : true,
+  //   purchaseToken   : usdcAddress,
+  //   purchaseFee     : toUSDC('100'),
+  // };
+  // await _createCustomer('11', taggr, project);
+  // await _deployProject('12', taggr, customerSettings, project, chainId, networkName);
+
+  // project = {
+  //   customer        : 'TaggrAuto',
+  //   customerAddress : '0x39b68cBB39187091737B6b40e0B3a86DA0C150b4',
+  //   planType        : MEMBERSHIP_PLAN_TYPE.business,
+  //   projectId       : 'taggr-auto',
+  //   name            : 'Taggr Auto',
+  //   symbol          : 'T-AUTO',
+  //   baseTokenUri    : `${taggrBaseUri}/taggr-auto/`,
+  //   nftFactoryId    : CONTRACT_TYPE.Lazy721,
+  //   max             : 100000,
+  //   royalties       : 700,  // 7%
+  //   selfServe       : true,
+  //   purchaseToken   : usdcAddress,
+  //   purchaseFee     : toUSDC('100'),
+  // };
+  // await _createCustomer('13', taggr, project);
+  // await _deployProject('14', taggr, customerSettings, project, chainId, networkName);
 
 
   log(`\n  Account Creation Complete!`);

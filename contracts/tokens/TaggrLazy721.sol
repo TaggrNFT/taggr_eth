@@ -12,6 +12,7 @@ contract TaggrLazy721 is
   |          Initialization           |
   |__________________________________*/
 
+
   constructor() TaggrBase721("TaggrLazy721", "TL721") {}
 
   /***********************************|

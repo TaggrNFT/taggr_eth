@@ -54,6 +54,11 @@ module.exports = async () => {
   // tx = await nftDistributor.setMerkleRootForProject('ROYAL-ROSE-ART-GALLERY', merkleRoot);
   // await tx.wait();
 
+  merkleRoot = '0xc78c88004bcdb97b8fd575a18f14564dd7a24d42412f2976323f0b4105839d7d';
+  log(`  Setting Merkle Root for Project: "${'cortex-glass'}" with Root: ${merkleRoot}`);
+  tx = await nftDistributor.setMerkleRootForProject('cortex-glass', merkleRoot);
+  await tx.wait();
+
   log(`\n  Merkle Root Set!`);
   log('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
 };
