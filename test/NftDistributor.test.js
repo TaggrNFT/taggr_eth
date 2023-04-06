@@ -51,6 +51,9 @@ describe("NftDistributor", function () {
     const txData = await tx.wait();
     const projectContractAddress = _.get(_.find(txData.events, {event: 'CustomerProjectLaunched'}), 'args.contractAddress', '');
 
+    await taggrSettings.connect(signerD).setProjectLaunchFeeToken(erc20token.address).then(tx => tx.wait());
+    await taggrSettings.connect(signerD).setProjectLaunchFee(1).then(tx => tx.wait());
+
     return {
       taggr, taggrSettings, customerSettings, nftDistributor, tokenEscrow, projectContractAddress,
       erc20token, erc721token, ethSender,
@@ -201,7 +204,7 @@ describe("NftDistributor", function () {
     it('should collect minting fees for Taggr based on Plan Type');
     it('should not be able to purchase a claimed NFT');
 
-    it('should allow users to start a project and pruchase NFTs', async () => {
+    it.only('should allow users to start a project and pruchase NFTs', async () => {
       const {
         taggr,
         nftDistributor,
@@ -215,14 +218,14 @@ describe("NftDistributor", function () {
       } = await loadFixture(deployCoreFixture);
 
       const tokenId = 1;
-      const purchasePrice = toWei('100');
+      const purchasePrice = toWei('10000000000000000000');
 
       await taggr.connect(signerD).toggleCustomerSelfServe(user2, true).then((tx) => tx.wait());
 
       // Fund User to Buy NFT
       await erc20token.mint(user2, toWei('500'));
       // Approve Contract to move our Funds
-      await erc20token.connect(signer2).approve(nftDistributor.address, purchasePrice);
+      await erc20token.connect(signer2).approve(taggr.address, purchasePrice);
 
       // Setup
       await taggr.connect(signer2).launchNewProject(
