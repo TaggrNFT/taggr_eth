@@ -63,21 +63,6 @@ module.exports = {
         count: 10,
       },
     },
-    goerli: {
-      url: `https://goerli.infura.io/v3/${process.env.INFURA_APIKEY}`,
-      // url: `https://eth-goerli.alchemyapi.io/v2/${process.env.ALCHEMY_APIKEY_GOERLI}`,
-      gasPrice: 4e9,
-      accounts: {
-        mnemonic: mnemonic.testnet,
-        initialIndex: 0,
-        count: 10,
-      },
-      // verify: {
-      //   etherscan: {
-      //     apiUrl: 'http://mynetwork.xyz'
-      //   }
-      // },
-    },
     mumbai: {
       url: `https://matic-mumbai.chainstacklabs.com/`,
       gasPrice: 10e9,
@@ -98,8 +83,8 @@ module.exports = {
       },
     },
     mainnet: {
-      url: `https://mainnet.infura.io/v3/${process.env.INFURA_APIKEY}`,
-      // url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_APIKEY}`,
+      // url: `https://mainnet.infura.io/v3/${process.env.INFURA_APIKEY}`,
+      url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_APIKEY}`,
       gasPrice: 22e9,
       accounts: {
           mnemonic: mnemonic.mainnet,
