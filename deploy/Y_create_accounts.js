@@ -268,6 +268,23 @@ module.exports = async () => {
   // await _createCustomer('13', taggr, project);
   // await _deployProject('14', taggr, customerSettings, project, chainId, networkName);
 
+  // project = {
+  //   customer        : 'Taggr',
+  //   customerAddress : protocolOwner, // MAINNET = 0x5Fd79eB99b7a0CF9c715538ac40074A7f187A28c
+  //   planType        : MEMBERSHIP_PLAN_TYPE.business,
+  //   projectId       : 'toronto-web-3-2023',
+  //   name            : 'Toronto Web3 2023',
+  //   symbol          : 'T-W3',
+  //   baseTokenUri    : `${taggrBaseUri}/toronto-web-3-2023/`,
+  //   nftFactoryId    : CONTRACT_TYPE.Lazy721,
+  //   max             : 100,
+  //   royalties       : 300,  // 3%
+  //   selfServe       : true,
+  //   purchaseToken   : usdcAddress,
+  //   purchaseFee     : toUSDC('100'),
+  // };
+  // await _createCustomer('15', taggr, project);
+  // await _deployProject('16', taggr, customerSettings, project, chainId, networkName);
 
   log(`\n  Account Creation Complete!`);
   log('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
