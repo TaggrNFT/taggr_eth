@@ -106,10 +106,11 @@ describe("Taggr", function () {
 
       expect(await nftRelay.getProjectName()).to.be.eq(TEST_PROJECT_ID);
 
-      await nftRelay.connect(signer1).mapTokens(
+      expect(await nftRelay.connect(signer1).mapTokens(
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-      ).then((tx) => tx.wait());
+      )).to.emit(nftRelay, 'TokensMapped');
+
     });
   });
 
