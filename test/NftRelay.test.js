@@ -93,7 +93,14 @@ describe("Taggr", function () {
         erc721token.address
       ).then((tx) => tx.wait());
 
-
+      // 7. Call initialize() on TaggrNftRelay
+      await nftRelay.initialize(
+        TEST_PROJECT_ID,
+        user1,
+        user1,
+        erc721token.address,
+        user1
+      ).then((tx) => tx.wait());
     });
   });
 
