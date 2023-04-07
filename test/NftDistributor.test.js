@@ -205,7 +205,7 @@ describe("NftDistributor", function () {
     it('should collect minting fees for Taggr based on Plan Type');
     it('should not be able to purchase a claimed NFT');
 
-    it.only('Allow user to create a customer account', async () => {
+    it('Allow user to create a customer account', async () => {
       const {
         taggr,
         taggrSettings,
