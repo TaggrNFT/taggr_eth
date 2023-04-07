@@ -20,6 +20,7 @@ contract TaggrNftRelay is Ownable, BlackholePrevention, ITaggrNftRelay, IERC721R
   event StateUpdated(bool isEnabled);
 
   bool internal _enabled;
+  string internal _deployedProjectName;
   address internal _tokenDistributor;
   address internal _nftContractAddress;
   address internal _nftHolderAddress;
@@ -37,6 +38,10 @@ contract TaggrNftRelay is Ownable, BlackholePrevention, ITaggrNftRelay, IERC721R
   /***********************************|
   |      Distributor Functions        |
   |__________________________________*/
+
+  function getProjectName() external view returns (string memory projectName) {
+    projectName = _deployedProjectName;
+  }
 
   function getTokenById(uint256 tokenId) external view returns (uint256 nftTokenId, bool isDistributed) {
     nftTokenId = tokenIdToNftTokenId[tokenId];
@@ -63,6 +68,7 @@ contract TaggrNftRelay is Ownable, BlackholePrevention, ITaggrNftRelay, IERC721R
   |__________________________________*/
 
   function initialize(
+    string memory _projectName,
     address _owner,
     address _nftDistributor,
     address _nftHolder
@@ -70,6 +76,7 @@ contract TaggrNftRelay is Ownable, BlackholePrevention, ITaggrNftRelay, IERC721R
     external
     onlyOwner
   {
+    _deployedProjectName = _projectName;
     _tokenDistributor = _nftDistributor;
     _nftHolderAddress = _nftHolder;
     if (_nftHolderAddress == address(0)) {
@@ -104,6 +111,10 @@ contract TaggrNftRelay is Ownable, BlackholePrevention, ITaggrNftRelay, IERC721R
   function disable() external onlyOwner {
     _enabled = false;
     emit StateUpdated(_enabled);
+  }
+
+  function setProjectName(string memory name) external onlyOwner {
+    _deployedProjectName = name;
   }
 
   function setTokenDistributor(address distributor) external onlyOwner {
