@@ -86,6 +86,14 @@ describe("Taggr", function () {
       expect(isUserCustomer).to.be.eq(true);
 
 
+      // Create Project
+      await taggr.connect(signerD).managerLaunchNewProjectWithContract(
+        user1,
+        TEST_PROJECT_ID,
+        erc721token.address
+      ).then((tx) => tx.wait());
+
+
     });
   });
 
