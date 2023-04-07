@@ -51,9 +51,8 @@ describe("NftDistributor", function () {
     const txData = await tx.wait();
     const projectContractAddress = _.get(_.find(txData.events, {event: 'CustomerProjectLaunched'}), 'args.contractAddress', '');
 
-    await taggrSettings.connect(signerD).setProjectLaunchFeeToken(erc20token.address).then(tx => tx.wait());
-    await taggrSettings.connect(signerD).setProjectLaunchFee(1).then(tx => tx.wait());
-    await taggrSettings.connect(signerD).setMembershipFeeToken(erc20token.address).then(tx => tx.wait());
+    // await taggrSettings.connect(signerD).setProjectLaunchFeeToken(erc20token.address).then(tx => tx.wait());
+    // await taggrSettings.connect(signerD).setProjectLaunchFee(1).then(tx => tx.wait());
     // await taggrSettings.connect(signerD).setMintingFeeByPlanType(1, 1).then(tx => tx.wait());
 
     return {
@@ -209,19 +208,16 @@ describe("NftDistributor", function () {
     it.only('Allow user to create a customer account', async () => {
       const {
         taggr,
-        nftDistributor,
+        taggrSettings,
         erc20token,
-        projectContractAddress,
-        tokenEscrow,
-        signer1,
         signer2,
         user2,
         signerD
       } = await loadFixture(deployCoreFixture);
 
-      const tokenId = 1;
       const purchasePrice = toWei('10000000000000000000');
 
+      await taggrSettings.connect(signerD).setMembershipFeeToken(erc20token.address).then(tx => tx.wait());
       await taggr.connect(signerD).toggleCustomerSelfServe(user2, true).then((tx) => tx.wait());
 
       // Fund User to Buy NFT
@@ -231,25 +227,6 @@ describe("NftDistributor", function () {
 
       // Setup
       await taggr.connect(signer2).createCustomerAccount(1).then((tx) => tx.wait());
-
-      // await taggr.connect(signer2).launchNewProject(
-      //   TEST_PROJECT_ID,
-      //   'testProject11',
-      //   'projectSymbol',
-      //   'https://test.com',
-      //   0,
-      //   10,
-      //   10000
-      // ).then((tx) => tx.wait());
-
-      // Purchase NFT
-      // await expect(nftDistributor.connect(signer2).purchaseNft(TEST_PROJECT_ID, projectContractAddress, tokenId))
-      //   .to.emit(nftDistributor, 'NftPurchased')
-      //   .withArgs(user2, projectContractAddress, tokenId, false);
-
-      // // Confirm Token Balances
-      // expect(await erc20token.balanceOf(tokenEscrow.address)).to.equal(purchasePrice);
-      // expect(await erc20token.balanceOf(user2)).to.equal(toWei('400'));
     });
   });
 
