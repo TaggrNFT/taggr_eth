@@ -82,8 +82,8 @@ describe("Taggr", function () {
       await taggrSettings.connect(signerD).setMembershipFeeToken(erc20token.address).then(tx => tx.wait());
       await taggr.connect(signer1).createCustomerAccount(1).then((tx) => tx.wait());
 
-      // const isUserCustomer = await taggr.connect(signer1).isCustomer(user1);
-      // expect(isUserCustomer).to.be.eq(true);
+      const isUserCustomer = await taggr.connect(signer1).isCustomer(user1);
+      expect(isUserCustomer).to.be.eq(true);
 
 
     });
