@@ -48,7 +48,16 @@ describe("Taggr", function () {
 
   describe('Customers and Projects', async () => {
     it.only('Deploy and initiate TaggrNftRelay', async () => {
-      const { user1, taggr, signer1, nftRelay, erc721token, erc20token } = await loadFixture(deployCoreFixture);
+      const {
+        user1,
+        taggr,
+        signer1,
+        signerD,
+        nftRelay,
+        erc721token,
+        erc20token,
+        taggrSettings, 
+      } = await loadFixture(deployCoreFixture);
 
       // Mint ERC721 Token
       for (let i = 0; i < 100; i++) {
@@ -70,7 +79,8 @@ describe("Taggr", function () {
       await erc20token.connect(signer1).approve(taggr.address, purchasePrice);
 
       // Setup
-      // await taggr.connect(signer1).createCustomerAccount(1).then((tx) => tx.wait());
+      await taggrSettings.connect(signerD).setMembershipFeeToken(erc20token.address).then(tx => tx.wait());
+      await taggr.connect(signer1).createCustomerAccount(1).then((tx) => tx.wait());
 
       // const isUserCustomer = await taggr.connect(signer1).isCustomer(user1);
       // expect(isUserCustomer).to.be.eq(true);
