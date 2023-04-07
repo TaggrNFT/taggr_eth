@@ -46,7 +46,7 @@ contract TaggrBase721 is
     virtual
     override
   {
-    require(!_initialized, "TB:E-002");
+    require(!_initialized, "TB721:E-002");
     _tokenDistributor = _distributor;
     _contractName = _name;
     _contractSymbol = _symbol;

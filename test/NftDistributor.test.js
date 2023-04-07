@@ -60,7 +60,7 @@ describe("NftDistributor", function () {
   }
 
   describe('Merkle Claims', async () => {
-    it('should Verify a Merkle Prrof for a Valid Claim Code', async () => {
+    it('should Verify a Merkle Proof for a Valid Claim Code', async () => {
       const { nftDistributor, projectContractAddress, signer1 } = await loadFixture(deployCoreFixture);
 
       const tokenId = 1;

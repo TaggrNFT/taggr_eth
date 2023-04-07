@@ -52,18 +52,19 @@ module.exports = async () => {
   if (chainId === 1) {
     // Bolix Megaspace Giveaway Winners
     accounts = [
-      '0xBB7AFc63F936F9A6D814E02854f80e8860F7210b', // Tammy
-      '0x49c6a1fc0eb7c6717166c414d8c92a9480fd9694', // BP
-      '0x61B7cb1f0B633E85dB2561Aa3106dD91ecdB28a6', // WWC
-      '0xF5b20d83F6AD6831B0B5B74EA3545538fE54c6d7', // Clint
-      '0xe29433e08b9678D0c8a2c97cE3Dd48ADbe673664',
+      // '0xBB7AFc63F936F9A6D814E02854f80e8860F7210b', // Tammy
+      // '0x49c6a1fc0eb7c6717166c414d8c92a9480fd9694', // BP
+      // '0x61B7cb1f0B633E85dB2561Aa3106dD91ecdB28a6', // WWC
+      // '0xF5b20d83F6AD6831B0B5B74EA3545538fE54c6d7', // Clint
+      // '0xe29433e08b9678D0c8a2c97cE3Dd48ADbe673664',
+      // '0x3c433F9050187E2751cE0747340639C1186Be2Ed', // Brave Mobile - Rob for Taggr Auto
     ];
   }
 
   let tx;
   for (let i = 0; i < accounts.length; i++) {
     log(`    Granting 1 Free Mint Pass to ${accounts[i]}...`);
-    tx = await customerSettings.connect(signerPO).setProjectFreeMint('DIRTY-NERD', accounts[i], 1);
+    tx = await customerSettings.connect(signerD).setProjectFreeMint('taggr-auto', accounts[i], 1);
     await tx.wait();
   }
 

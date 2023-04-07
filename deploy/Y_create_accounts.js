@@ -101,8 +101,8 @@ module.exports = async () => {
   const networkName = network.name === 'homestead' ? 'mainnet' : network.name;
 
   const taggrBaseUri = isProd
-    ? 'https://us-central1-taggr-nft.cloudfunctions.net/api/meta'
-    : 'https://us-central1-taggr-nft-staging.cloudfunctions.net/api/meta';
+    ? 'https://us-central1-taggr-admin-prod.cloudfunctions.net/api/project-meta'
+    : 'https://us-central1-taggr-admin-staging.cloudfunctions.net/api/project-meta';
 
   log('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
   log('Taggr - Account Creation');
@@ -187,6 +187,104 @@ module.exports = async () => {
   // await _deployProject('5', taggr, customerSettings, project, chainId, networkName);
 
   // await _setPurchaseFee('6', customerSettings, project);
+
+  //
+  // GOERLI
+  //
+
+  // project = {
+  //   customer        : 'UncleNate',
+  //   customerAddress : '0xD90adE64094D73599CfA3F6353DA76cb64C029E9',
+  //   planType        : MEMBERSHIP_PLAN_TYPE.business,
+  //   projectId       : 'cortex-demo',
+  //   name            : 'Cortex Glass Ape Demo',
+  //   symbol          : 'CGAD',
+  //   baseTokenUri    : `${taggrBaseUri}/cortex-demo/`,
+  //   nftFactoryId    : CONTRACT_TYPE.Lazy721,
+  //   max             : 100000,
+  //   royalties       : 700,  // 7%
+  //   selfServe       : true,
+  //   purchaseToken   : usdcAddress,
+  //   purchaseFee     : toUSDC('100'),
+  // };
+  // await _createCustomer('7', taggr, project);
+  // await _deployProject('8', taggr, customerSettings, project, chainId, networkName);
+
+  // project = {
+  //   customer        : 'TaggrAuto',
+  //   customerAddress : '0x39b68cBB39187091737B6b40e0B3a86DA0C150b4',
+  //   planType        : MEMBERSHIP_PLAN_TYPE.business,
+  //   projectId       : 'taggr-auto-demo',
+  //   name            : 'Taggr Auto Demo',
+  //   symbol          : 'T-AUTO-D',
+  //   baseTokenUri    : `${taggrBaseUri}/taggr-auto-demo/`,
+  //   nftFactoryId    : CONTRACT_TYPE.Lazy721,
+  //   max             : 100000,
+  //   royalties       : 700,  // 7%
+  //   selfServe       : true,
+  //   purchaseToken   : usdcAddress,
+  //   purchaseFee     : toUSDC('100'),
+  // };
+  // await _createCustomer('9', taggr, project);
+  // await _deployProject('10', taggr, customerSettings, project, chainId, networkName);
+
+  //
+  // MAINNET
+  //
+
+  // project = {
+  //   customer        : 'UncleNate',
+  //   customerAddress : '0xD90adE64094D73599CfA3F6353DA76cb64C029E9',
+  //   planType        : MEMBERSHIP_PLAN_TYPE.business,
+  //   projectId       : 'cortex-glass',
+  //   name            : 'Cortex Glass Apes Demo',
+  //   symbol          : 'CGA',
+  //   baseTokenUri    : `${taggrBaseUri}/cortex-glass/`,
+  //   nftFactoryId    : CONTRACT_TYPE.Lazy721,
+  //   max             : 100000,
+  //   royalties       : 700,  // 7%
+  //   selfServe       : true,
+  //   purchaseToken   : usdcAddress,
+  //   purchaseFee     : toUSDC('100'),
+  // };
+  // await _createCustomer('11', taggr, project);
+  // await _deployProject('12', taggr, customerSettings, project, chainId, networkName);
+
+  // project = {
+  //   customer        : 'TaggrAuto',
+  //   customerAddress : '0x39b68cBB39187091737B6b40e0B3a86DA0C150b4',
+  //   planType        : MEMBERSHIP_PLAN_TYPE.business,
+  //   projectId       : 'taggr-auto',
+  //   name            : 'Taggr Auto',
+  //   symbol          : 'T-AUTO',
+  //   baseTokenUri    : `${taggrBaseUri}/taggr-auto/`,
+  //   nftFactoryId    : CONTRACT_TYPE.Lazy721,
+  //   max             : 100000,
+  //   royalties       : 700,  // 7%
+  //   selfServe       : true,
+  //   purchaseToken   : usdcAddress,
+  //   purchaseFee     : toUSDC('100'),
+  // };
+  // await _createCustomer('13', taggr, project);
+  // await _deployProject('14', taggr, customerSettings, project, chainId, networkName);
+
+  // project = {
+  //   customer        : 'Taggr',
+  //   customerAddress : protocolOwner, // MAINNET = 0x5Fd79eB99b7a0CF9c715538ac40074A7f187A28c
+  //   planType        : MEMBERSHIP_PLAN_TYPE.business,
+  //   projectId       : 'toronto-web-3-2023',
+  //   name            : 'Toronto Web3 2023',
+  //   symbol          : 'T-W3',
+  //   baseTokenUri    : `${taggrBaseUri}/toronto-web-3-2023/`,
+  //   nftFactoryId    : CONTRACT_TYPE.Lazy721,
+  //   max             : 100,
+  //   royalties       : 300,  // 3%
+  //   selfServe       : true,
+  //   purchaseToken   : usdcAddress,
+  //   purchaseFee     : toUSDC('100'),
+  // };
+  // await _createCustomer('15', taggr, project);
+  // await _deployProject('16', taggr, customerSettings, project, chainId, networkName);
 
   log(`\n  Account Creation Complete!`);
   log('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');

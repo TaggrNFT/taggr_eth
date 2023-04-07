@@ -10,6 +10,7 @@ interface INftDistributor {
   event NftClaimed(address indexed to, address indexed contractAddress, uint256 tokenId);
   event NftPurchased(address indexed to, address indexed contractAddress, uint256 tokenId, bool mintPass);
   event PhysicalDeliveryTimestamp(string indexed projectId, address indexed contractAddress, uint256 tokenId, uint256 timestamp);
+  event MerkleRootSet(string indexed projectId, address indexed contractAddress, bytes32 merkleRoot);
 
   function isFullyClaimed(address contractAddress, uint256 tokenId) external view returns (bool isClaimed);
 
