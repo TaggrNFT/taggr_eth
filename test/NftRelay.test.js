@@ -44,7 +44,7 @@ describe("Taggr", function () {
 
   describe('Customers and Projects', async () => {
     it.only('Deploy and initiate TaggrNftRelay', async () => {
-      const { user1, signerD, nftRelay, erc721token } = await loadFixture(deployCoreFixture);
+      const { user1, deployer, signer1, nftRelay, erc721token } = await loadFixture(deployCoreFixture);
 
       // Mint ERC721 Token
       for (let i = 0; i < 100; i++) {
@@ -53,6 +53,10 @@ describe("Taggr", function () {
 
       const user1Balance = await erc721token.balanceOf(user1);
       expect(user1Balance).to.equal(100);
+
+      // Approve NftRelay to transfer ERC721 Token
+      await erc721token.connect(signer1).setApprovalForAll(nftRelay.address, true).then((tx) => tx.wait());
+      expect(await erc721token.isApprovedForAll(user1, nftRelay.address)).to.equal(true);
       
 
     });

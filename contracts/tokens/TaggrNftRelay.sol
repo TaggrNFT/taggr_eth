@@ -14,8 +14,8 @@ import "../lib/BlackholePrevention.sol";
   1. Deploy a Fake/Mock NFT Contract (Standard, with Random Token IDs)
   2. Deploy TaggrNftRelay Contract
   3. Mint X amount of Mock NFTs to an EOA (Personal Test Wallet)
-
   4. Approve the TaggrNftRelay Contract (setApprovalForAll) for the Mock NFTs
+
   5. Create Customer with Taggr.managerUpdateCustomerAccount()
   6. Call Taggr.managerLaunchNewProjectWithContract() with the TaggrNftRelay Contract address
   7. Call initialize() on TaggrNftRelay
