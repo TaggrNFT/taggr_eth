@@ -153,6 +153,27 @@ const contractDeploy = async (args = {fromUnitTests: false}) => {
     log('     - Gas Cost:         ', getTxGasCost({ deployTransaction: tokenEscrow.deployTransaction }));
   }
 
+  const NftRelay = await ethers.getContractFactory('TaggrNftRelay');
+  let nftRelay;
+  if (!args.fromUnitTests) {
+    log('  Deploying nft relay...');
+    const NftRelayInstance = await upgrades.deployProxy(NftRelay, [deployer]);
+    nftRelay = await NftRelayInstance.deployed();
+  } else {
+    nftRelay = await NftRelay.deploy();
+    // await nftRelay.initialize(deployer);
+  }
+  deployData['TaggrNftRelay'] = {
+    abi: getContractAbi('TaggrNftRelay'),
+    address: nftRelay.address,
+    deployTransaction: nftRelay.deployTransaction,
+  }
+  saveDeploymentData(chainId, deployData);
+  if (!args.fromUnitTests) {
+    log('  - NftRelay:         ', nftRelay.address);
+    log('     - Block:            ', nftRelay.deployTransaction.blockNumber);
+    log('     - Gas Cost:         ', getTxGasCost({ deployTransaction: nftRelay.deployTransaction }));
+  }
 
   const TaggrFactoryLazy721 = await ethers.getContractFactory('TaggrFactoryLazy721');
   let taggrFactoryLazy721;
