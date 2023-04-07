@@ -34,9 +34,13 @@ describe("Taggr", function () {
     const erc721factory = await smock.mock('ERC721Mintable');
     const erc721token = await erc721factory.deploy();
 
+    // Deploy Mocked Contracts
+    const erc20factory = await smock.mock('ERC20Mintable');
+    const erc20token = await erc20factory.deploy();
+
     return {
       taggr, taggrSettings, nftDistributor, taggrFactoryLazy721, nftRelay,
-      erc721token,
+      erc721token, erc20token,
       deployer, protocolOwner, foundationTreasury, user1, user2, user3,
       signerD, signerPO, signerFT, signer1, signer2, signer3
     };
@@ -44,7 +48,7 @@ describe("Taggr", function () {
 
   describe('Customers and Projects', async () => {
     it.only('Deploy and initiate TaggrNftRelay', async () => {
-      const { user1, deployer, signer1, nftRelay, erc721token } = await loadFixture(deployCoreFixture);
+      const { user1, taggr, signer1, nftRelay, erc721token, erc20token } = await loadFixture(deployCoreFixture);
 
       // Mint ERC721 Token
       for (let i = 0; i < 100; i++) {
@@ -58,6 +62,19 @@ describe("Taggr", function () {
       await erc721token.connect(signer1).setApprovalForAll(nftRelay.address, true).then((tx) => tx.wait());
       expect(await erc721token.isApprovedForAll(user1, nftRelay.address)).to.equal(true);
       
+      // create customer account 
+      // Fund User to Buy NFTV
+      const purchasePrice = toWei('10000');
+      await erc20token.mint(user1, toWei('500'));
+      // Approve Contract to move our Funds
+      await erc20token.connect(signer1).approve(taggr.address, purchasePrice);
+
+      // Setup
+      // await taggr.connect(signer1).createCustomerAccount(1).then((tx) => tx.wait());
+
+      // const isUserCustomer = await taggr.connect(signer1).isCustomer(user1);
+      // expect(isUserCustomer).to.be.eq(true);
+
 
     });
   });
