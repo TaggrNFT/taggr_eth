@@ -31,19 +31,12 @@ describe("Taggr", function () {
     await contractSetup({fromUnitTests: true});
 
     // Deploy Mocked Contracts
-    const erc20factory = await smock.mock('ERC20Mintable');
-    const erc20token = await erc20factory.deploy();
-
     const erc721factory = await smock.mock('ERC721Mintable');
     const erc721token = await erc721factory.deploy();
 
-    const EthSenderFactory = new ethers.ContractFactory(EthSender.abi, EthSender.bytecode, signerD);
-    const ethSender = await EthSenderFactory.deploy();
-    await ethSender.deployTransaction.wait();
-
     return {
       taggr, taggrSettings, nftDistributor, taggrFactoryLazy721, nftRelay,
-      erc20token, erc721token, ethSender,
+      erc721token,
       deployer, protocolOwner, foundationTreasury, user1, user2, user3,
       signerD, signerPO, signerFT, signer1, signer2, signer3
     };
@@ -51,8 +44,17 @@ describe("Taggr", function () {
 
   describe('Customers and Projects', async () => {
     it.only('Deploy and initiate TaggrNftRelay', async () => {
-      const { taggr, user1, signerD, nftRelay } = await loadFixture(deployCoreFixture);
-      console.log(nftRelay);
+      const { user1, signerD, nftRelay, erc721token } = await loadFixture(deployCoreFixture);
+
+      // Mint ERC721 Token
+      for (let i = 0; i < 100; i++) {
+        await erc721token.mint(user1, i);
+      }
+
+      const user1Balance = await erc721token.balanceOf(user1);
+      expect(user1Balance).to.equal(100);
+      
+
     });
   });
 
