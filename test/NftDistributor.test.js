@@ -53,6 +53,8 @@ describe("NftDistributor", function () {
 
     await taggrSettings.connect(signerD).setProjectLaunchFeeToken(erc20token.address).then(tx => tx.wait());
     await taggrSettings.connect(signerD).setProjectLaunchFee(1).then(tx => tx.wait());
+    await taggrSettings.connect(signerD).setMembershipFeeToken(erc20token.address).then(tx => tx.wait());
+    // await taggrSettings.connect(signerD).setMintingFeeByPlanType(1, 1).then(tx => tx.wait());
 
     return {
       taggr, taggrSettings, customerSettings, nftDistributor, tokenEscrow, projectContractAddress,
@@ -204,7 +206,7 @@ describe("NftDistributor", function () {
     it('should collect minting fees for Taggr based on Plan Type');
     it('should not be able to purchase a claimed NFT');
 
-    it.only('should allow users to start a project and pruchase NFTs', async () => {
+    it.only('Allow user to create a customer account', async () => {
       const {
         taggr,
         nftDistributor,
@@ -228,15 +230,17 @@ describe("NftDistributor", function () {
       await erc20token.connect(signer2).approve(taggr.address, purchasePrice);
 
       // Setup
-      await taggr.connect(signer2).launchNewProject(
-        TEST_PROJECT_ID,
-        'testProject',
-        'projectSymbol',
-        'https://test.com',
-        0,
-        10,
-        10000
-      ).then((tx) => tx.wait());
+      await taggr.connect(signer2).createCustomerAccount(1).then((tx) => tx.wait());
+
+      // await taggr.connect(signer2).launchNewProject(
+      //   TEST_PROJECT_ID,
+      //   'testProject11',
+      //   'projectSymbol',
+      //   'https://test.com',
+      //   0,
+      //   10,
+      //   10000
+      // ).then((tx) => tx.wait());
 
       // Purchase NFT
       // await expect(nftDistributor.connect(signer2).purchaseNft(TEST_PROJECT_ID, projectContractAddress, tokenId))
