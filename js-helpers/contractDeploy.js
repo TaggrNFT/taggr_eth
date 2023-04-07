@@ -259,6 +259,7 @@ const contractDeploy = async (args = {fromUnitTests: false}) => {
 
   const exportObj = {
     taggr,
+    nftRelay,
     taggrSettings,
     customerSettings,
     nftDistributor,
