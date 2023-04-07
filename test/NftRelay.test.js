@@ -93,6 +93,8 @@ describe("Taggr", function () {
         erc721token.address
       ).then((tx) => tx.wait());
 
+      expect(await taggr.connect(signer1).isProjectContract(TEST_PROJECT_ID, erc721token.address)).to.be.eq(true);
+
       // 7. Call initialize() on TaggrNftRelay
       await nftRelay.initialize(
         TEST_PROJECT_ID,
@@ -101,6 +103,8 @@ describe("Taggr", function () {
         erc721token.address,
         user1
       ).then((tx) => tx.wait());
+
+      expect(await nftRelay.getProjectName()).to.be.eq(TEST_PROJECT_ID);
     });
   });
 
