@@ -223,8 +223,12 @@ describe("NftDistributor", function () {
       await erc20token.mint(user2, toWei('500'));
       // Approve Contract to move our Funds
       await erc20token.connect(signer2).approve(taggr.address, purchasePrice);
+
       // Setup
       await taggr.connect(signer2).createCustomerAccount(1).then((tx) => tx.wait());
+
+      const isUserCustomer = await taggr.connect(signer2).isCustomer(user2);
+      expect(isUserCustomer).to.be.eq(true);
     });
   });
 
