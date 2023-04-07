@@ -50,6 +50,7 @@ describe("Taggr", function () {
     it.only('Deploy and initiate TaggrNftRelay', async () => {
       const {
         user1,
+        user2,
         taggr,
         signer1,
         signerD,
@@ -95,7 +96,6 @@ describe("Taggr", function () {
 
       expect(await taggr.connect(signer1).isProjectContract(TEST_PROJECT_ID, erc721token.address)).to.be.eq(true);
 
-      // 7. Call initialize() on TaggrNftRelay
       await nftRelay.initialize(
         TEST_PROJECT_ID,
         user1,
@@ -112,6 +112,10 @@ describe("Taggr", function () {
       )).to.emit(nftRelay, 'TokensMapped');
 
       expect(await nftRelay.connect(signer1).enable()).to.emit(nftRelay, 'StateUpdated');
+
+      await nftRelay.connect(signer1).forceDistributeToken(user2, 1).then((tx) => tx.wait());
+
+      expect(await erc721token.balanceOf(user2)).to.be.eq(1);
     });
   });
 
