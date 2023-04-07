@@ -215,16 +215,14 @@ describe("NftDistributor", function () {
         signerD
       } = await loadFixture(deployCoreFixture);
 
-      const purchasePrice = toWei('10000000000000000000');
+      const purchasePrice = toWei('10000');
 
       await taggrSettings.connect(signerD).setMembershipFeeToken(erc20token.address).then(tx => tx.wait());
-      await taggr.connect(signerD).toggleCustomerSelfServe(user2, true).then((tx) => tx.wait());
 
       // Fund User to Buy NFT
       await erc20token.mint(user2, toWei('500'));
       // Approve Contract to move our Funds
       await erc20token.connect(signer2).approve(taggr.address, purchasePrice);
-
       // Setup
       await taggr.connect(signer2).createCustomerAccount(1).then((tx) => tx.wait());
     });
