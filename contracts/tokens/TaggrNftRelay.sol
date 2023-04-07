@@ -9,6 +9,23 @@ import "../interfaces/ITaggrNftRelay.sol";
 import "../lib/BlackholePrevention.sol";
 
 /**
+ Testing Scenario:
+
+  1. Deploy a Fake/Mock NFT Contract (Standard, with Random Token IDs)
+  2. Deploy TaggrNftRelay Contract
+  3. Mint X amount of Mock NFTs to an EOA (Personal Test Wallet)
+  4. Approve the TaggrNftRelay Contract (setApprovalForAll) for the Mock NFTs
+  5. Create Customer with Taggr.managerUpdateCustomerAccount()
+  6. Call Taggr.managerLaunchNewProjectWithContract() with the TaggrNftRelay Contract address
+  7. Call initialize() on TaggrNftRelay
+  8. Call mapTokens() on TaggrNftRelay
+  9. Call enable() on TaggrNftRelay (will only work if Approved to transfer Mock NFTs first)
+ 10. Test forceDistributeToken()
+ 11. Test ClaimNft from NftDistributor
+
+*/
+
+/**
  * @dev Allows an External NFT Contract to Relay Distribution of Tokens through Taggr's NftDistributor
  *  - Allows you to Map Non-Sequential or Custom Token IDs to a Sequential Set with Claim Codes
  *  - Allows Distribution of the External NFTs via Mint or Transfer by Taggr's NftDistributor (provides the required "distributeToken" function)
@@ -71,6 +88,7 @@ contract TaggrNftRelay is Ownable, BlackholePrevention, ITaggrNftRelay, IERC721R
     string memory _projectName,
     address _owner,
     address _nftDistributor,
+    address _nftContract,
     address _nftHolder
   )
     external
@@ -78,6 +96,7 @@ contract TaggrNftRelay is Ownable, BlackholePrevention, ITaggrNftRelay, IERC721R
   {
     _deployedProjectName = _projectName;
     _tokenDistributor = _nftDistributor;
+    _nftContractAddress = _nftContract;
     _nftHolderAddress = _nftHolder;
     if (_nftHolderAddress == address(0)) {
       _nftHolderAddress = address(this);
@@ -94,6 +113,7 @@ contract TaggrNftRelay is Ownable, BlackholePrevention, ITaggrNftRelay, IERC721R
     uint i = 0;
     for (; i < len; i++) {
       tokenIdToNftTokenId[_tokenIds[i]] = _nftTokenIds[i];
+      nftTokenIdToTokenId[_nftTokenIds[i]] = _tokenIds[i];
     }
     emit TokensMapped(i);
   }
