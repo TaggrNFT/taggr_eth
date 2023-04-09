@@ -22,7 +22,7 @@ import "../lib/BlackholePrevention.sol";
   9. Call enable() on TaggrNftRelay (will only work if Approved to transfer Mock NFTs first)
  10. Test forceDistributeToken()
  11. Test ClaimNft from NftDistributor
-
+ 12. Test OwnerOf() for Taggr Owner Verification
 */
 
 /**
@@ -53,8 +53,17 @@ contract TaggrNftRelay is Ownable, BlackholePrevention, ITaggrNftRelay, IERC721R
 
 
   /***********************************|
-  |      Distributor Functions        |
+  |          Public Functions         |
   |__________________________________*/
+
+  function balanceOf(address owner) external view returns (uint256 balance) {
+    balance = IERC721(_nftContractAddress).balanceOf(owner);
+  }
+
+  function ownerOf(uint256 tokenId) external view returns (address owner) {
+    uint256 nftTokenId = tokenIdToNftTokenId[tokenId];
+    owner = IERC721(_nftContractAddress).ownerOf(nftTokenId);
+  }
 
   function getProjectName() external view returns (string memory projectName) {
     projectName = _deployedProjectName;
