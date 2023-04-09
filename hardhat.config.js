@@ -66,7 +66,7 @@ module.exports = {
     goerli: {
       url: `https://goerli.infura.io/v3/${process.env.INFURA_APIKEY}`,
       // url: `https://eth-goerli.alchemyapi.io/v2/${process.env.ALCHEMY_APIKEY_GOERLI}`,
-      gasPrice: 1e9,
+      gasPrice: 135e9,
       accounts: {
         mnemonic: mnemonic.testnet,
         initialIndex: 0,
@@ -100,7 +100,7 @@ module.exports = {
     mainnet: {
       url: `https://mainnet.infura.io/v3/${process.env.INFURA_APIKEY}`,
       // url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_APIKEY}`,
-      gasPrice: 21e9,
+      gasPrice: 25e9,
       accounts: {
           mnemonic: mnemonic.mainnet,
           initialIndex: 0,
@@ -128,7 +128,7 @@ module.exports = {
     runOnCompile: true,
     clear: true,
     flat: true,
-    only: ["Taggr", "CustomerSettings", "TaggrSettings", "NftDistributor", "Merkle", "TokenEscrow", "FakeUSDC"],
+    only: ["Taggr", "CustomerSettings", "TaggrSettings", "NftDistributor", "Merkle", "TokenEscrow", "TaggrNftRelay", "FakeUSDC"],
   },
   namedAccounts: {
     deployer: { default: 0 },

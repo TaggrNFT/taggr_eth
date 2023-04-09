@@ -59,10 +59,20 @@ module.exports = async () => {
   // tx = await nftDistributor.setMerkleRootForProject('cortex-glass', merkleRoot);
   // await tx.wait();
 
-  merkleRoot = '0x04a76b6c9363c1d7b9e647a713c7601ea8528a5789225a5236f67b13d644ded5';
-  log(`  Setting Merkle Root for Project: "${'toronto-web-3-2023'}" with Root: ${merkleRoot}`);
-  tx = await nftDistributor.setMerkleRootForProject('toronto-web-3-2023', merkleRoot);
-  await tx.wait();
+  // merkleRoot = '0x04a76b6c9363c1d7b9e647a713c7601ea8528a5789225a5236f67b13d644ded5';
+  // log(`  Setting Merkle Root for Project: "${'toronto-web-3-2023'}" with Root: ${merkleRoot}`);
+  // tx = await nftDistributor.setMerkleRootForProject('toronto-web-3-2023', merkleRoot);
+  // await tx.wait();
+
+  // merkleRoot = '0xc5b6eec301d747676a430bcb3843efa36ba917beffe39c8a689de7ad6f45542c';
+  // log(`  Setting Merkle Root for Project: "${'manhattan-insanity'}" with Root: ${merkleRoot}`);
+  // tx = await nftDistributor.setMerkleRootForProject('manhattan-insanity', merkleRoot);
+  // await tx.wait();
+
+  // merkleRoot = '0xcf13f2fea78167131d1efaa05a4a9e2549685cb6dd85c1f160779d5e2f8253b2';
+  // log(`  Setting Merkle Root for Project: "${'taggr-nft-nyc-demos'}" with Root: ${merkleRoot}`);
+  // tx = await nftDistributor.setMerkleRootForProject('taggr-nft-nyc-demos', merkleRoot);
+  // await tx.wait();
 
   log(`\n  Merkle Root Set!`);
   log('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
