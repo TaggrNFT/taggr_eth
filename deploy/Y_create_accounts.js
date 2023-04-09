@@ -65,8 +65,10 @@ const _deployProject = async (txId, taggr, customerSettings, project, chainId, n
   );
   const txDeployData = await txData.wait();
 
-  const tx = await customerSettings.setProjectPurchaseFee(project.projectId, project.purchaseToken, project.purchaseFee);
-  await tx.wait();
+  if (project.purchaseFee !== false) {
+    const tx = await customerSettings.setProjectPurchaseFee(project.projectId, project.purchaseToken, project.purchaseFee);
+    await tx.wait();
+  }
 
   const projectContract = await taggr.getProjectContract(project.projectId);
   const deployData = {};
@@ -285,6 +287,68 @@ module.exports = async () => {
   // };
   // await _createCustomer('15', taggr, project);
   // await _deployProject('16', taggr, customerSettings, project, chainId, networkName);
+
+
+  //
+  // Taggr @ NFT.NYC 2023 - Demo Tags (Packs of 5) - MAINNET - Deployed - Sun Apr 9 2023 @ 6:04 PM
+  //
+  // project = {
+  //   customer        : 'Taggr',
+  //   customerAddress : protocolOwner, // MAINNET = 0x5Fd79eB99b7a0CF9c715538ac40074A7f187A28c
+  //   planType        : MEMBERSHIP_PLAN_TYPE.business,
+  //   projectId       : 'taggr-nft-nyc-demos',
+  //   name            : 'Taggr @ NFT.NYC 2023',
+  //   symbol          : 'TGR.NYC.23',
+  //   baseTokenUri    : `${taggrBaseUri}/taggr-nft-nyc-demos/`,
+  //   nftFactoryId    : CONTRACT_TYPE.Lazy721,
+  //   max             : 100,
+  //   royalties       : 300,  // 3%
+  //   selfServe       : true,
+  //   purchaseToken   : usdcAddress,
+  //   purchaseFee     : false,
+  // };
+  // await _deployProject('17', taggr, customerSettings, project, chainId, networkName);
+
+  //
+  // Taggr @ NFT.NYC 2023 - Manhattan Insanity Art - MAINNET - Deployed - Sun Apr 9 2023 @ 6:07 PM
+  //
+  // project = {
+  //   customer        : 'Taggr',
+  //   customerAddress : protocolOwner, // MAINNET = 0x5Fd79eB99b7a0CF9c715538ac40074A7f187A28c
+  //   planType        : MEMBERSHIP_PLAN_TYPE.business,
+  //   projectId       : 'manhattan-insanity',
+  //   name            : 'Taggr Art @ NFT.NYC 2023',
+  //   symbol          : 'TGR.ART.NYC.23',
+  //   baseTokenUri    : `${taggrBaseUri}/manhattan-insanity/`,
+  //   nftFactoryId    : CONTRACT_TYPE.Lazy721,
+  //   max             : 100,
+  //   royalties       : 300,  // 3%
+  //   selfServe       : true,
+  //   purchaseToken   : usdcAddress,
+  //   purchaseFee     : false,
+  // };
+  // await _deployProject('18', taggr, customerSettings, project, chainId, networkName);
+
+  //
+  // Taggr @ NFT.NYC 2023 - Cortex Flight Crew - MAINNET
+  //
+  // project = {
+  //   customer        : 'UncleNate',
+  //   customerAddress : '', // TODO - Get From Nate/Mango
+  //   planType        : MEMBERSHIP_PLAN_TYPE.business,
+  //   projectId       : 'cortex-flight-crew',
+  //   name            : 'Cortex Flight Crew',
+  //   symbol          : 'CFC',
+  //   baseTokenUri    : `${taggrBaseUri}/cortex-flight-crew/`,
+  //   nftFactoryId    : CONTRACT_TYPE.Lazy721,
+  //   max             : 100,
+  //   royalties       : 300,  // 3%
+  //   selfServe       : true,
+  //   purchaseToken   : usdcAddress,
+  //   purchaseFee     : false,
+  // };
+  // TODO: Deploy With Custom Contract
+
 
   log(`\n  Account Creation Complete!`);
   log('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
