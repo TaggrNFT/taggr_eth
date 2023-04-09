@@ -157,7 +157,7 @@ const contractDeploy = async (args = {fromUnitTests: false}) => {
   let nftRelay;
   if (!args.fromUnitTests) {
     log('  Deploying nft relay...');
-    const NftRelayInstance = await upgrades.deployProxy(NftRelay, [deployer]);
+    const NftRelayInstance = await NftRelay.deploy();
     nftRelay = await NftRelayInstance.deployed();
   } else {
     nftRelay = await NftRelay.deploy();

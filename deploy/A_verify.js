@@ -29,12 +29,15 @@ module.exports = async () => {
   log(' ');
 
   // Protocol
-  await verifyProxyContract({name: 'Taggr', networkName});
-  await verifyProxyContract({name: 'TaggrSettings', networkName});
-  await verifyProxyContract({name: 'CustomerSettings', networkName});
-  await verifyProxyContract({name: 'NftDistributor', networkName});
-  await verifyProxyContract({name: 'TaggrFactoryLazy721', networkName});
-  await verifyContract({name: 'TaggrLazy721', networkName});
+  // await verifyProxyContract({name: 'Taggr', networkName});
+  // await verifyProxyContract({name: 'TaggrSettings', networkName});
+  // await verifyProxyContract({name: 'CustomerSettings', networkName});
+  // await verifyProxyContract({name: 'NftDistributor', networkName});
+  // await verifyProxyContract({name: 'TaggrFactoryLazy721', networkName});
+  // await verifyContract({name: 'TaggrLazy721', networkName});
+
+  // Customer-specific NFT Relays
+  await verifyContract({name: 'cortex-flight-crew', networkName, contractRef: 'tokens/TaggrNftRelay.sol:TaggrNftRelay', addressOverride: '0x09d471ec779027cAF6284D32262B2Bae8d4980A8' });
 
 
   log('\n  Contract Verification Complete.');
