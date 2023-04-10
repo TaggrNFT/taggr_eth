@@ -39,6 +39,31 @@ describe("Taggr", function () {
     const erc20factory = await smock.mock('ERC20Mintable');
     const erc20token = await erc20factory.deploy();
 
+    // Mint ERC721 Token
+    for (let i = 0; i < 100; i++) {
+      await erc721token.mint(user1, i);
+    }
+
+    const user1Balance = await erc721token.balanceOf(user1);
+    expect(user1Balance).to.equal(100);
+
+    // Approve NftRelay to transfer ERC721 Token
+    await erc721token.connect(signer1).setApprovalForAll(nftRelay.address, true).then((tx) => tx.wait());
+    expect(await erc721token.isApprovedForAll(user1, nftRelay.address)).to.equal(true);
+    
+    // create customer account 
+    // Fund User to Buy NFTV
+    const purchasePrice = toWei('10000');
+    await erc20token.mint(user1, toWei('500'));
+    // Approve Contract to move our Funds
+    await erc20token.connect(signer1).approve(taggr.address, purchasePrice);
+
+    // Setup
+    await taggrSettings.connect(signerD).setMembershipFeeToken(erc20token.address).then(tx => tx.wait());
+    await taggr.connect(signer1).createCustomerAccount(1).then((tx) => tx.wait());
+
+    const isUserCustomer = await taggr.connect(signer1).isCustomer(user1);
+    expect(isUserCustomer).to.be.eq(true);
 
     return {
       taggr, taggrSettings, nftDistributor, taggrFactoryLazy721, nftRelay,
@@ -63,31 +88,6 @@ describe("Taggr", function () {
         nftDistributor,
       } = await loadFixture(deployCoreFixture);
 
-      // Mint ERC721 Token
-      for (let i = 0; i < 100; i++) {
-        await erc721token.mint(user1, i);
-      }
-
-      const user1Balance = await erc721token.balanceOf(user1);
-      expect(user1Balance).to.equal(100);
-
-      // Approve NftRelay to transfer ERC721 Token
-      await erc721token.connect(signer1).setApprovalForAll(nftRelay.address, true).then((tx) => tx.wait());
-      expect(await erc721token.isApprovedForAll(user1, nftRelay.address)).to.equal(true);
-      
-      // create customer account 
-      // Fund User to Buy NFTV
-      const purchasePrice = toWei('10000');
-      await erc20token.mint(user1, toWei('500'));
-      // Approve Contract to move our Funds
-      await erc20token.connect(signer1).approve(taggr.address, purchasePrice);
-
-      // Setup
-      await taggrSettings.connect(signerD).setMembershipFeeToken(erc20token.address).then(tx => tx.wait());
-      await taggr.connect(signer1).createCustomerAccount(1).then((tx) => tx.wait());
-
-      const isUserCustomer = await taggr.connect(signer1).isCustomer(user1);
-      expect(isUserCustomer).to.be.eq(true);
 
       // Create Project
       await taggr.connect(signerD).managerLaunchNewProjectWithContract(
@@ -118,7 +118,6 @@ describe("Taggr", function () {
       await nftRelay.connect(signer1).forceDistributeToken(user2, 1).then((tx) => tx.wait());
 
       expect(await erc721token.balanceOf(user2)).to.be.eq(1);
-
     });
 
     it ('Mints token through NftRelay', async () => {
@@ -141,8 +140,14 @@ describe("Taggr", function () {
       await taggr.connect(signerD).managerUpdateCustomerAccount(user1, 1);
 
       const PROJECT_02 = 'PROJECT_02';
-      const lunchedProjectReceipt =  await taggr.connect(signerD).managerLaunchNewProject(user1, PROJECT_02, 'Name', 'Symbol', '', 1, 1000, 100)
-        .then((tx) => { return tx.wait() });
+      // const lunchedProjectReceipt =  await taggr.connect(signerD).managerLaunchNewProject(user1, PROJECT_02, 'Name', 'Symbol', '', 1, 1000, 100)
+      //   .then((tx) => { return tx.wait() });
+            // Create Project
+      await taggr.connect(signerD).managerLaunchNewProjectWithContract(
+        user1,
+        PROJECT_02,
+        erc721token.address
+      ).then((tx) => tx.wait());
       const projectContractAddress = _.get(_.find(lunchedProjectReceipt.events, {event: 'CustomerProjectLaunched'}), 'args.contractAddress', '');
 
       expect(await nftDistributor.connect(signer1).setMerkleRoot(PROJECT_02, root))
