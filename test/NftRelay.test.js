@@ -6,10 +6,11 @@ const _ = require('lodash');
 
 const { contractDeploy } = require('../js-helpers/contractDeploy.js');
 const { contractSetup } = require('../js-helpers/contractSetup.js');
-const { log, toWei } = require('../js-helpers/utils');
-const EthSender = require('../build/contracts/contracts/test/EthSender.sol/EthSender.json');
+const { toWei } = require('../js-helpers/utils');
+const { MerkleTree } = require('merkletreejs');
+const keccak256 = require('keccak256');
 
-const TEST_PROJECT_ID = 'PID';
+const TEST_PROJECT_ID = 'PID1';
 const TEST_TOKEN_ID = '1337';
 const ROLES = {
   DEFAULT_ADMIN_ROLE  : '0x0000000000000000000000000000000000000000000000000000000000000000',
@@ -58,6 +59,7 @@ describe("Taggr", function () {
         erc721token,
         erc20token,
         taggrSettings, 
+        nftDistributor,
       } = await loadFixture(deployCoreFixture);
 
       // Mint ERC721 Token
@@ -116,6 +118,30 @@ describe("Taggr", function () {
       await nftRelay.connect(signer1).forceDistributeToken(user2, 1).then((tx) => tx.wait());
 
       expect(await erc721token.balanceOf(user2)).to.be.eq(1);
+
+      const tagId = 123;
+      const tokenId = 2
+      const claimCode = 'fjruf74jf';
+      const leavesSrc = [
+        `${erc721token.address}${tokenId+0}${tagId+0}${claimCode}1`,
+      ];
+
+      const leaves = leavesSrc.map(v => keccak256(v));
+      const tree = new MerkleTree(leaves, keccak256, { sort: true });
+      const root = tree.getHexRoot();
+      const leaf = keccak256(leavesSrc[0]);
+      const proof = tree.getHexProof(leaf);
+
+      console.log(tree.verify(proof, leaf, root)) // true
+
+      // await nftDistributor.connect(signer1).setMerkleRoot(TEST_PROJECT_ID, root);
+      // // Distribute token using NftDistributor
+      // await nftDistributor.connect(signer1).claimNft(
+      //   nftRelay.address,
+      //   tokenId,
+      //   leaf,
+      //   proof
+      // ).then((tx) => tx.wait());
     });
   });
 
