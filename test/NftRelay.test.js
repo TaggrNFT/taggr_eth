@@ -39,6 +39,7 @@ describe("Taggr", function () {
     const erc20factory = await smock.mock('ERC20Mintable');
     const erc20token = await erc20factory.deploy();
 
+
     return {
       taggr, taggrSettings, nftDistributor, taggrFactoryLazy721, nftRelay,
       erc721token, erc20token,
@@ -88,7 +89,6 @@ describe("Taggr", function () {
       const isUserCustomer = await taggr.connect(signer1).isCustomer(user1);
       expect(isUserCustomer).to.be.eq(true);
 
-
       // Create Project
       await taggr.connect(signerD).managerLaunchNewProjectWithContract(
         user1,
@@ -119,11 +119,15 @@ describe("Taggr", function () {
 
       expect(await erc721token.balanceOf(user2)).to.be.eq(1);
 
+    });
+
+    it ('Mints token through NftRelay', async () => {
       const tagId = 123;
       const tokenId = 2
       const claimCode = 'fjruf74jf';
       const leavesSrc = [
         `${erc721token.address}${tokenId+0}${tagId+0}${claimCode}1`,
+        `${erc721token.address}${tokenId+1}${tagId+1}${claimCode}2`,
       ];
 
       const leaves = leavesSrc.map(v => keccak256(v));
@@ -134,14 +138,23 @@ describe("Taggr", function () {
 
       console.log(tree.verify(proof, leaf, root)) // true
 
-      // await nftDistributor.connect(signer1).setMerkleRoot(TEST_PROJECT_ID, root);
-      // // Distribute token using NftDistributor
-      // await nftDistributor.connect(signer1).claimNft(
-      //   nftRelay.address,
-      //   tokenId,
-      //   leaf,
-      //   proof
-      // ).then((tx) => tx.wait());
+      await taggr.connect(signerD).managerUpdateCustomerAccount(user1, 1);
+
+      const PROJECT_02 = 'PROJECT_02';
+      const lunchedProjectReceipt =  await taggr.connect(signerD).managerLaunchNewProject(user1, PROJECT_02, 'Name', 'Symbol', '', 1, 1000, 100)
+        .then((tx) => { return tx.wait() });
+      const projectContractAddress = _.get(_.find(lunchedProjectReceipt.events, {event: 'CustomerProjectLaunched'}), 'args.contractAddress', '');
+
+      expect(await nftDistributor.connect(signer1).setMerkleRoot(PROJECT_02, root))
+        .to.emit(nftDistributor, 'MerkleRootSet');
+
+      await nftDistributor.connect(signer1).claimNft(
+        projectContractAddress,
+        tokenId,
+        leaf,
+        proof
+      ).then((tx) => tx.wait());
+
     });
   });
 
