@@ -168,6 +168,8 @@ describe("Taggr", function () {
       expect(await nftDistributor.connect(signer1).setMerkleRoot(PROJECT_02, root))
         .to.emit(nftDistributor, 'MerkleRootSet');
 
+      // This fails because the erc721token token does not have distributeToken method.
+      // Throws with Error: Transaction reverted: function selector was not recognized and there's no fallback function
       expect(
         nftDistributor.connect(signer1).claimNft(
           erc721token.address,
