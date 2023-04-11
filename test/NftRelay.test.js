@@ -52,7 +52,7 @@ describe("Taggr", function () {
     expect(await erc721token.isApprovedForAll(user1, nftRelay.address)).to.equal(true);
     
     // create customer account 
-    // Fund User to Buy NFTV
+    // Fund User
     const purchasePrice = toWei('10000');
     await erc20token.mint(user1, toWei('500'));
     // Approve Contract to move our Funds
@@ -74,7 +74,7 @@ describe("Taggr", function () {
   }
 
   describe('Customers and Projects', async () => {
-    it.only('Deploy and initiate TaggrNftRelay', async () => {
+    it('Deploy and initiate TaggrNftRelay', async () => {
       const {
         user1,
         user2,
@@ -83,11 +83,7 @@ describe("Taggr", function () {
         signerD,
         nftRelay,
         erc721token,
-        erc20token,
-        taggrSettings, 
-        nftDistributor,
       } = await loadFixture(deployCoreFixture);
-
 
       // Create Project
       await taggr.connect(signerD).managerLaunchNewProjectWithContract(
@@ -120,10 +116,21 @@ describe("Taggr", function () {
       expect(await erc721token.balanceOf(user2)).to.be.eq(1);
     });
 
-    it ('Mints token through NftRelay', async () => {
+    it.only('Mints token through NftRelay', async () => {
+      const {
+        user1,
+        taggr,
+        signer1,
+        signerD,
+        nftRelay,
+        erc721token,
+        nftDistributor,
+      } = await loadFixture(deployCoreFixture);
+
+      const PROJECT_02 = 'PROJECT_02';
+      const claimCode = 'fjruf74jf';
       const tagId = 123;
       const tokenId = 2
-      const claimCode = 'fjruf74jf';
       const leavesSrc = [
         `${erc721token.address}${tokenId+0}${tagId+0}${claimCode}1`,
         `${erc721token.address}${tokenId+1}${tagId+1}${claimCode}2`,
@@ -135,31 +142,40 @@ describe("Taggr", function () {
       const leaf = keccak256(leavesSrc[0]);
       const proof = tree.getHexProof(leaf);
 
-      console.log(tree.verify(proof, leaf, root)) // true
+      expect(tree.verify(proof, leaf, root));
 
       await taggr.connect(signerD).managerUpdateCustomerAccount(user1, 1);
 
-      const PROJECT_02 = 'PROJECT_02';
-      // const lunchedProjectReceipt =  await taggr.connect(signerD).managerLaunchNewProject(user1, PROJECT_02, 'Name', 'Symbol', '', 1, 1000, 100)
-      //   .then((tx) => { return tx.wait() });
-            // Create Project
-      await taggr.connect(signerD).managerLaunchNewProjectWithContract(
+      await nftRelay.initialize(
+        PROJECT_02,
+        user1,
+        user1,
+        erc721token.address,
+        user1
+      ).then((tx) => tx.wait());
+
+      expect(await nftRelay.getProjectName()).to.be.eq(PROJECT_02);
+
+      // Create Project
+      const lunchedProjectReceipt = await taggr.connect(signerD).managerLaunchNewProjectWithContract(
         user1,
         PROJECT_02,
         erc721token.address
       ).then((tx) => tx.wait());
+
       const projectContractAddress = _.get(_.find(lunchedProjectReceipt.events, {event: 'CustomerProjectLaunched'}), 'args.contractAddress', '');
 
       expect(await nftDistributor.connect(signer1).setMerkleRoot(PROJECT_02, root))
         .to.emit(nftDistributor, 'MerkleRootSet');
 
-      await nftDistributor.connect(signer1).claimNft(
-        projectContractAddress,
-        tokenId,
-        leaf,
-        proof
-      ).then((tx) => tx.wait());
-
+      expect(
+        nftDistributor.connect(signer1).claimNft(
+          erc721token.address,
+          tokenId,
+          leaf,
+          proof
+        ).then((tx) => tx.wait())
+      ).to.be.rejected
     });
   });
 
