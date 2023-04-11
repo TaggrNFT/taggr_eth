@@ -116,7 +116,7 @@ describe("Taggr", function () {
       expect(await erc721token.balanceOf(user2)).to.be.eq(1);
     });
 
-    it.only('Mints token through NftRelay', async () => {
+    it('Mints token through nftDistributor using the claimNft method', async () => {
       const {
         user1,
         taggr,
