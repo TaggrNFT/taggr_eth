@@ -6,10 +6,11 @@ const _ = require('lodash');
 
 const { contractDeploy } = require('../js-helpers/contractDeploy.js');
 const { contractSetup } = require('../js-helpers/contractSetup.js');
-const { log, toWei } = require('../js-helpers/utils');
-const EthSender = require('../build/contracts/contracts/test/EthSender.sol/EthSender.json');
+const { toWei } = require('../js-helpers/utils');
+const { MerkleTree } = require('merkletreejs');
+const keccak256 = require('keccak256');
 
-const TEST_PROJECT_ID = 'PID';
+const TEST_PROJECT_ID = 'PID1';
 const TEST_TOKEN_ID = '1337';
 const ROLES = {
   DEFAULT_ADMIN_ROLE  : '0x0000000000000000000000000000000000000000000000000000000000000000',
@@ -38,6 +39,32 @@ describe("Taggr", function () {
     const erc20factory = await smock.mock('ERC20Mintable');
     const erc20token = await erc20factory.deploy();
 
+    // Mint ERC721 Token
+    for (let i = 0; i < 100; i++) {
+      await erc721token.mint(user1, i);
+    }
+
+    const user1Balance = await erc721token.balanceOf(user1);
+    expect(user1Balance).to.equal(100);
+
+    // Approve NftRelay to transfer ERC721 Token
+    await erc721token.connect(signer1).setApprovalForAll(nftRelay.address, true).then((tx) => tx.wait());
+    expect(await erc721token.isApprovedForAll(user1, nftRelay.address)).to.equal(true);
+    
+    // create customer account 
+    // Fund User
+    const purchasePrice = toWei('10000');
+    await erc20token.mint(user1, toWei('500'));
+    // Approve Contract to move our Funds
+    await erc20token.connect(signer1).approve(taggr.address, purchasePrice);
+
+    // Setup
+    await taggrSettings.connect(signerD).setMembershipFeeToken(erc20token.address).then(tx => tx.wait());
+    await taggr.connect(signer1).createCustomerAccount(1).then((tx) => tx.wait());
+
+    const isUserCustomer = await taggr.connect(signer1).isCustomer(user1);
+    expect(isUserCustomer).to.be.eq(true);
+
     return {
       taggr, taggrSettings, nftDistributor, taggrFactoryLazy721, nftRelay,
       erc721token, erc20token,
@@ -47,7 +74,7 @@ describe("Taggr", function () {
   }
 
   describe('Customers and Projects', async () => {
-    it.only('Deploy and initiate TaggrNftRelay', async () => {
+    it('Deploy and initiate TaggrNftRelay', async () => {
       const {
         user1,
         user2,
@@ -56,36 +83,7 @@ describe("Taggr", function () {
         signerD,
         nftRelay,
         erc721token,
-        erc20token,
-        taggrSettings, 
       } = await loadFixture(deployCoreFixture);
-
-      // Mint ERC721 Token
-      for (let i = 0; i < 100; i++) {
-        await erc721token.mint(user1, i);
-      }
-
-      const user1Balance = await erc721token.balanceOf(user1);
-      expect(user1Balance).to.equal(100);
-
-      // Approve NftRelay to transfer ERC721 Token
-      await erc721token.connect(signer1).setApprovalForAll(nftRelay.address, true).then((tx) => tx.wait());
-      expect(await erc721token.isApprovedForAll(user1, nftRelay.address)).to.equal(true);
-      
-      // create customer account 
-      // Fund User to Buy NFTV
-      const purchasePrice = toWei('10000');
-      await erc20token.mint(user1, toWei('500'));
-      // Approve Contract to move our Funds
-      await erc20token.connect(signer1).approve(taggr.address, purchasePrice);
-
-      // Setup
-      await taggrSettings.connect(signerD).setMembershipFeeToken(erc20token.address).then(tx => tx.wait());
-      await taggr.connect(signer1).createCustomerAccount(1).then((tx) => tx.wait());
-
-      const isUserCustomer = await taggr.connect(signer1).isCustomer(user1);
-      expect(isUserCustomer).to.be.eq(true);
-
 
       // Create Project
       await taggr.connect(signerD).managerLaunchNewProjectWithContract(
@@ -116,6 +114,70 @@ describe("Taggr", function () {
       await nftRelay.connect(signer1).forceDistributeToken(user2, 1).then((tx) => tx.wait());
 
       expect(await erc721token.balanceOf(user2)).to.be.eq(1);
+    });
+
+    it('Mints token through nftDistributor using the claimNft method', async () => {
+      const {
+        user1,
+        taggr,
+        signer1,
+        signerD,
+        nftRelay,
+        erc721token,
+        nftDistributor,
+      } = await loadFixture(deployCoreFixture);
+
+      const PROJECT_02 = 'PROJECT_02';
+      const claimCode = 'fjruf74jf';
+      const tagId = 123;
+      const tokenId = 2
+      const leavesSrc = [
+        `${erc721token.address}${tokenId+0}${tagId+0}${claimCode}1`,
+        `${erc721token.address}${tokenId+1}${tagId+1}${claimCode}2`,
+      ];
+
+      const leaves = leavesSrc.map(v => keccak256(v));
+      const tree = new MerkleTree(leaves, keccak256, { sort: true });
+      const root = tree.getHexRoot();
+      const leaf = keccak256(leavesSrc[0]);
+      const proof = tree.getHexProof(leaf);
+
+      expect(tree.verify(proof, leaf, root));
+
+      await taggr.connect(signerD).managerUpdateCustomerAccount(user1, 1);
+
+      await nftRelay.initialize(
+        PROJECT_02,
+        user1,
+        user1,
+        erc721token.address,
+        user1
+      ).then((tx) => tx.wait());
+
+      expect(await nftRelay.getProjectName()).to.be.eq(PROJECT_02);
+
+      // Create Project
+      const lunchedProjectReceipt = await taggr.connect(signerD).managerLaunchNewProjectWithContract(
+        user1,
+        PROJECT_02,
+        erc721token.address
+      ).then((tx) => tx.wait());
+
+      const projectContractAddress = _.get(_.find(lunchedProjectReceipt.events, {event: 'CustomerProjectLaunched'}), 'args.contractAddress', '');
+
+      expect(await nftDistributor.connect(signer1).setMerkleRoot(PROJECT_02, root))
+        .to.emit(nftDistributor, 'MerkleRootSet');
+
+      // This fails because the erc721token token does not have distributeToken method.
+      // Throws with Error: Transaction reverted: function selector was not recognized and there's no fallback function
+      expect(
+        nftDistributor.connect(signer1).claimNft(
+          erc721token.address,
+          tokenId,
+          leaf,
+          proof
+        ).then((tx) => tx.wait())
+      ).to.be.rejected
     });
   });
 
